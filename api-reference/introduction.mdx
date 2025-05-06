@@ -35,10 +35,10 @@ https://api.probe.dev/v1/probe/file
 
 We accept GET and  POST:
 
-| **HTTP Method** | **Paramters in**                                                                        | **Use when**                   |
-| --------------- | --------------------------------------------------------------------------------------- | ------------------------------ |
-| `GET`           | Query string                                                                            | Small payloads, quick tests    |
-| `POST`          | Body (`multipart/form-data`,`application/x-www-form-urlencoded`, or  `application/json` | Large payloads or many options |
+| **Method** | **Paramters in**                                                                        | **Use when**                   |
+| ---------- | --------------------------------------------------------------------------------------- | ------------------------------ |
+| `GET`      | Query string                                                                            | Small payloads, quick tests    |
+| `POST`     | Body (`multipart/form-data`,`application/x-www-form-urlencoded`, or  `application/json` | Large payloads or many options |
 
 ## Proivide the Media Asset
 
@@ -74,10 +74,10 @@ The query string grants read‑only access to `sample-video.mp4` for 24 hours (
 
 #### **How to generate a pre‑signed URL**
 
-| **Tool**           | **One-liner**                                                     | **Notes**                                                              |
-| ------------------ | ----------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **AWS CLI**        | aws s3 presign s3://my-bucket/sample-video.mp4 --expires-in 86400 | Requires the AWS CLI with valid credentials set in ~/.aws/credentials. |
-| **Python (Boto3)** |                                                                   |                                                                        |
+| **Tool**           | **One-liner**                                                                                                                                                                                                               | **Notes**                                                              |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **AWS CLI**        | aws s3 presign s3://my-bucket/sample-video.mp4 --expires-in 86400                                                                                                                                                           | Requires the AWS CLI with valid credentials set in ~/.aws/credentials. |
+| **Python (Boto3)** | python\\nimport boto3, datetime\\ns3 = boto3.client('s3')\\nurl = s3.generate_presigned_url(\\n    'get_object',\\n    Params={'Bucket': 'my-bucket', 'Key': 'sample-video.mp4'},\\n    ExpiresIn=86400\\n)\\nprint(url)\\n | Works inside Lambdas or any environment with the boto3 library.        |
 
 One liner to generare your own:
 
