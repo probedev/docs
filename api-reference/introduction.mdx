@@ -46,21 +46,29 @@ Specify a direct link tomedia file hosted on any webserver or within a publicall
 
 ### Using Amazon S3 with  Key Based Authorization
 
-To use key-based authorization for a media asset specify your key and secret in the url path.  For more information about setting up key based authorization visit [AWS Identity and Access Managment.](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html)
+To use key-based authorization for a media asset specify your key and secret in the url path.  For more information about setting up key based authorization visit [AWS Identity and Access Managment.](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) \
+\
+A  direct http link with the KEY and SECRET included: 
 
 ```http
 http://KEY:SECRET@s3.amazonaws.com/BUCKET/PATH
 ```
 
-or direct:
+or  the S3 object‑storage URI scheme :
 
 ```
 s3://KEY:SECRET@BUCKET/PATH
 ```
 
+## The Most Simple Request Example
+
+```powershell
+curl -X GET https://api.probe.dev/v1/probe/file?token=developer-token&only=ffprobe
+```
+
 ## Select Report Types
 
-Chose <u>one or all </u>report types: mediainfo, ffprobe, or probe_report:
+Chose <u>one or all </u>report types: `mediainfo`, `ffprobe`, or` probe_report`:
 
 ```json
 {
@@ -127,18 +135,39 @@ The `probe_report` parses the raw JSON payloads from both ffprobe and mediainfo,
     },
 ```
 
-## Deploy with one line of code
+## **Migrating from local **`ffprobe`**or  **  `mediaInfo`**commands to the Probe API** 
 
-We designed our API to make it painless and remove firction when migrating from a local execution of ffprobe or mediainfo to ffprobe or mediainfo with our API .  In the PHP ffprobe example below you will note you can migrate by substituting one line of code from a local shell script to a webservice while maintaining all of your existing paramters. 
-
-<CodeGroup>
-
-```php PHP ffprobe
-exec("ffprobe -i $url -output_format json -probesize $probesize -analyzeduration $analyzeduration -max_probe_packets $max_probe_packets -show_format -show_streams", $output);
-
-//changes to: 
-
-$output = file_get_contents("https://api.probe.dev/v1/probe/file?token=$token&url=$url&only=ffprobe&ffprobe[output_format]=json&ffprobe[probesize]=$probesize&ffprobe[analyzeduration]=$analyzeduration&ffprobe[max_probe_packets]=$max_probe_packets&ffprobe[show_format]=true&ffprobe[show_streams]=true");
-```
-
-</CodeGroup>
+> _The PHP example below shows a one‑line swap: replace the local shell invocation with an HTTPS GET to the Probe API while keeping every _`ffprobe`_parameter intact._ 
+>
+> ```php
+> // Local execution (be sure to escape vars in production)
+> exec(
+>     'ffprobe -i ' . escapeshellarg($url) .
+>     " -print_format json -probesize $probesize" .
+>     " -analyzeduration $analyzeduration -max_probe_packets $max_probe_packets" .
+>     ' -show_format -show_streams',
+>     $output
+> );
+> ```
+>
+> ```php
+> // Equivalent call through the Probe API
+> $token = getenv('PROBE_API_TOKEN');   // safer than hard‑coding
+> 
+> $query = http_build_query([
+>     'token'                      => $token,
+>     'url'                        => $url,
+>     'only'                       => 'ffprobe',
+>     'ffprobe[output_format]'     => 'json',
+>     'ffprobe[probesize]'         => $probesize,
+>     'ffprobe[analyzeduration]'   => $analyzeduration,
+>     'ffprobe[max_probe_packets]' => $max_probe_packets,
+>     'ffprobe[show_format]'       => 'true',
+>     'ffprobe[show_streams]'      => 'true',
+> ]);
+> 
+> $response = file_get_contents("https://api.probe.dev/v1/probe/file?$query");
+> $output   = json_decode($response, true);   // handle errors in production
+> ```
+>
+> _That’s it—you’ve migrated the command to a secure HTTPS call while preserving every original ffprobe flag._
