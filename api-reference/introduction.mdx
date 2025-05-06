@@ -16,7 +16,7 @@ curl -G https://api.probe.dev/v1/probe/file \
   --data-urlencode "url=https://probelibrary.s3.amazonaws.com/sample-source.mp4"
 ```
 
-The response is standard JSON identical to what a local `ffprobe` run would return.
+The response is standard `JSON` identical to what a local `ffprobe` run would return.
 
 ## Authentication
 
@@ -26,8 +26,6 @@ The response is standard JSON identical to what a local `ffprobe` run would retu
 | Query string         | `?token=$PROBE_API_TOKEN`                | Handy for quick cURL tests       |
 
 After registering, you’ll see every request and response in the **Logs** tab of these docs.
-
-Your private beta welcome email will include a link to register for credentials. After you have registered and authenticated your API token and logs will securely surface within our API reference docs.
 
 ## Endpoint
 
@@ -124,19 +122,19 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
     },
 ```
 
-| **Parameter** | **Description**                                   | **Allowed Values**                                                                                                                                                                                                                                   | **Default Value** |
-| ------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| `enabled`     | Toggle MediaInfo analysis                         | `true`, `false`                                                                                                                                                                                                                                      | `false`           |
-| `version`     | Specifies the verion of medianinfo which will run | `latest, 24.06, 23.11, 22.12, 21.09, 20.09, 19.09, 18.12`                                                                                                                                                                                            | `latest`          |
-| `output`      | Output format returned                            | `HTML`, `XML`, `JSON`, `EBUCore_1.8_ps`, `EBUCore_1.8_sp`, `EBUCore_1.8_ps_JSON`, `EBUCore_1.8_sp_JSON`, `EBUCore_1.6`, `FIMS_1.3`, `MPEG-7_Strict`, `MPEG-7_Relaxed`, `MPEG-7_Extended`, `PBCore_2.1`, `PBCore_2.0`, `PBCore_1.2`, or `NISO_Z39.87` | `JSON`            |
+| **Parameter** | **Description**                                   | **Allowed Values**                                                                                                                                                                                                                                   | **Default ** |
+| ------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `enabled`     | Toggle MediaInfo analysis                         | `true`, `false`                                                                                                                                                                                                                                      | `false`      |
+| `version`     | Specifies the verion of medianinfo which will run | `latest, 24.06, 23.11, 22.12, 21.09, 20.09, 19.09, 18.12`                                                                                                                                                                                            | `latest`     |
+| `output`      | Output format returned                            | `HTML`, `XML`, `JSON`, `EBUCore_1.8_ps`, `EBUCore_1.8_sp`, `EBUCore_1.8_ps_JSON`, `EBUCore_1.8_sp_JSON`, `EBUCore_1.6`, `FIMS_1.3`, `MPEG-7_Strict`, `MPEG-7_Relaxed`, `MPEG-7_Extended`, `PBCore_2.1`, `PBCore_2.0`, `PBCore_1.2`, or `NISO_Z39.87` | `JSON`       |
 
 <Tip>
   You may pass any MediaInfo CLI flag in snake_case; names match the original tool.
 </Tip>
 
-## Report Type —**FFprobe**
+## Report Type — **FFprobe**
 
-[FFprobe](https://ffmpeg.org/ffprobe.html) offers deeper introspection than MediaInfo and integrates seamlessly with FFmpeg pipelines. 
+[FFprobe](https://ffmpeg.org/ffprobe.html) offers deeper introspection than MediaInfo and integrates seamlessly with FFmpeg pipelines.
 
 ```json
  },
@@ -147,19 +145,19 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
     }
 ```
 
-| **Parameter**   | **Description**         | **Allowed Values**                                                 | **Default Value** |
-| --------------- | ----------------------- | ------------------------------------------------------------------ | ----------------- |
-| `enabled`       | Toggle ffprobe abalysis | `true`, `flase`                                                    | `flase`           |
-| `version`       | ffprobe build to lrun   | `latest, 7.0, 6.0, 5.1, 5.0, 4.4, 4.3, 4.2, 4.1, 4.0, 3.4, or 3.3` | `latest`          |
-| `output_format` | output serialization    | `default`, `csv`, `flat`, `ini`, `json`, or `xml`                  | `json`            |
+| **Parameter**   | **Description**         | **Allowed Values**                                                 | **Default** |
+| --------------- | ----------------------- | ------------------------------------------------------------------ | ----------- |
+| `enabled`       | Toggle ffprobe abalysis | `true`, `flase`                                                    | `flase`     |
+| `version`       | ffprobe build to lrun   | `latest, 7.0, 6.0, 5.1, 5.0, 4.4, 4.3, 4.2, 4.1, 4.0, 3.4, or 3.3` | `latest`    |
+| `output_format` | output serialization    | `default`, `csv`, `flat`, `ini`, `json`, or `xml`                  | `json`      |
 
 <Tip>
-  We accept virtually all ffprobe options with the same names so refer to the [ffprobe documentation](https://ffmpeg.org/ffprobe.html#Options) for details. 
+  We accept virtually all ffprobe options with the same names so refer to the [ffprobe documentation](https://ffmpeg.org/ffprobe.html#Options) for details.
 </Tip>
 
-## Report Type: **Probe Report**
+## Report Type — **Probe Report**
 
-The `probe_report` parses the raw JSON payloads from both ffprobe and mediainfo, structurally diffs, normalizes and canonicalizes the paramters then measurabley improves accuracy with our direct and indirect comparison algorithm.  Our algorithm has been trained with ML on over a billion media assets and improves  a vast number of incconcistencies found in a vast number diverse media assets types we have discovered managing  one of the [largest media processing pipelines](http://api.encoding.com) in the world.
+The `probe_report` parses, reconciles and canonicalizes the raw outputs from FFprobe and MediaInfo, then applies machine‑learning heuristics (trained on \>1 billion assets) to correct inconsistencies and deliver a single, authoritative metadata set.
 
 ```json
 {,
@@ -169,6 +167,12 @@ The `probe_report` parses the raw JSON payloads from both ffprobe and mediainfo,
         "diff": true
     },
 ```
+
+| **Parameter** | **Description**                                                                                                           | **Allowed values** | **Default** |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------ | ----------- |
+| enabled       | Toggle Probe Report generation                                                                                            | `true,` `false`    | `false`     |
+| diff          | Include structural diff between MediaInfo and FFprobe outputs                                                             | `true,` `false`    | `false`     |
+| inject_json   | Inject the canonicalized metadata back into the original raw JSON payload so downstream tools can consume a single object | `true,` `false`    | `false`     |
 
 ## ****Migrating from local ffprobeor  \*\*  mediaInfo****commands to the Probe API\*\*
 
