@@ -4,7 +4,7 @@ description: "By substituting one line of code in your workflow you can take adv
 ---
 
 <Warning>
-  **We are currently in private beta. If you would like to join the program** [<u>submit a request</u>.](https://www.probe.dev/#privatebeta)
+  **We are currently in private beta. If you would like to join the program** [<u>submit a request.</u>](https://www.probe.dev/#privatebeta)
 </Warning>
 
 ## API Credentials
@@ -35,18 +35,18 @@ Here are the API call methods we currenlty support. This covers all of the most 
 
 ## Specify Media Asset
 
-Specify a direct link tomedia file hosted on any webserver or within a publically available S3 bucket.  
+Specify a direct link tomedia file hosted on any webserver or within a publically available S3 bucket.
 
 ```json
 {
-    "url": "https://probeqa.s3.amazonaws.com/trusted_sources/video/sample-source.mp4",
+    "url": "https://probelibrary.s3.amazonaws.com/sample-source.mp4",
  
 }
 ```
 
-## Using Amazon S3 with  Key Based Authorization 
+## Using Amazon S3 with  Key Based Authorization
 
-To use key-based authorization for a media asset specify your key and secret in the url path.  For more information about setting up key based authorization visit [AWS Identity and Access Managment.](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) 
+To use key-based authorization for a media asset specify your key and secret in the url path.  For more information about setting up key based authorization visit [AWS Identity and Access Managment.](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html)
 
 ```http
 http://KEY:SECRET@s3.amazonaws.com/BUCKET/PATH
@@ -82,7 +82,7 @@ Chose <u>one or all </u>report types: mediainfo, ffprobe, or probe_report:
 
 **MediaInfo**\
 \
-[<u>MediaInfo</u>](https://mediaarea.net/en/MediaInfo#google_vignette) is a convenient unified display of the most relevant technical and tag data for video and audio files. We support all the latest builds of mediainfo to ensure integrity with your production workflow.  Use the `version` tag to specify which version of mediainfo you would like run.  Use `latest`for the most recent version. 
+[<u>MediaInfo</u>](https://mediaarea.net/en/MediaInfo#google_vignette) is a convenient unified display of the most relevant technical and tag data for video and audio files. We support all the latest builds of mediainfo to ensure integrity with your production workflow.  Use the `version` tag to specify which version of mediainfo you would like run.  Use `latest`for the most recent version.
 
 ```json
   },
@@ -118,7 +118,7 @@ Chose <u>one or all </u>report types: mediainfo, ffprobe, or probe_report:
 
 **Probe Report**
 
-The `probe_report` parses the raw JSON payloads from both ffprobe and mediainfo, structurally diffs, normalizes and canonicalizes the paramters then measurabley improves accuracy with our direct and indirect comparison algorithm.  Our algorithm has been trained with ML on over a billion media assets and improves  a vast number of incconcistencies found in a vast number diverse media assets types we have discovered managing  one of the [largest media processing pipelines](http://api.encoding.com) in the world. 
+The `probe_report` parses the raw JSON payloads from both ffprobe and mediainfo, structurally diffs, normalizes and canonicalizes the paramters then measurabley improves accuracy with our direct and indirect comparison algorithm.  Our algorithm has been trained with ML on over a billion media assets and improves  a vast number of incconcistencies found in a vast number diverse media assets types we have discovered managing  one of the [largest media processing pipelines](http://api.encoding.com) in the world.
 
 ```json
 {,
