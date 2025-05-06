@@ -1,5 +1,5 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
+  "$schema": "https://api.probe.dev/frontend/api/v1/openapi.json",
   "theme": "mint",
   "name": "Mint Starter Kit",
   "colors": {
