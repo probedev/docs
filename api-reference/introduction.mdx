@@ -111,7 +111,7 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
 | -------- | ------ | --------------------------------------- | ---------------------------------------------------------------- |
 | only     | string | `media info`,` ffprobe`, `probe_report` | Run exaclty one tool and return its raw output with no wrappers. |
 
-## Report Type-  **MediaInfo**
+## Report Type  —  **MediaInfo**
 
 [MediaInfo](https://mediaarea.net/en/MediaInfo#google_vignette) summarizes the most relevant technical and tag information. Use `version` to pin a specific release; `latest` always picks the newest build we host.
 
@@ -134,11 +134,9 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
   You may pass any MediaInfo CLI flag in snake_case; names match the original tool.
 </Tip>
 
-`only`is a parameter with which you can get mediainfo response without any wrappers, meaning you get what you would get if you ran mediainfo locally. Although our defaults are usually sufficient, you can pass most mediainfo parameters. Our API parameters have the same names as mediainfo (but snake cased), so it is very easy to pass the parameters you used previously to run mediainfo. So you don't need to change your code to handle the received response we return.
+## Report Type —**FFprobe**
 
-## Report Type: **FFprobe**
-
-[FFprobe](https://ffmpeg.org/ffprobe.html) is a command-line tool included with FFmpeg, primarily used for extracting and analyzing media metadata. It is is known to provide deeper introspection than media info and has the benefit of integration with ffmpeg based media processing pipelines. Chose the `only` parameter to return our default ffprobe parameters or chose to specify your custom ffprobe probe parameters, we accept virtually all ffprobe options with the same names so refer to the [ffprobe documentation](https://ffmpeg.org/ffprobe.html#Options) for details. We support all the latest builds `version` of ffprobe to ensure integrity with your production workflow.
+[FFprobe](https://ffmpeg.org/ffprobe.html) offers deeper introspection than MediaInfo and integrates seamlessly with FFmpeg pipelines. 
 
 ```json
  },
@@ -149,9 +147,15 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
     }
 ```
 
-| **Parameter** | **Description**                                | **Allowed Values**                                                 | **Default Value** |
-| ------------- | ---------------------------------------------- | ------------------------------------------------------------------ | ----------------- |
-| version       | Specifies the verion of ffprobe which will run | `latest, 7.0, 6.0, 5.1, 5.0, 4.4, 4.3, 4.2, 4.1, 4.0, 3.4, or 3.3` | `latest`          |
+| **Parameter**   | **Description**         | **Allowed Values**                                                 | **Default Value** |
+| --------------- | ----------------------- | ------------------------------------------------------------------ | ----------------- |
+| `enabled`       | Toggle ffprobe abalysis | `true`, `flase`                                                    | `flase`           |
+| `version`       | ffprobe build to lrun   | `latest, 7.0, 6.0, 5.1, 5.0, 4.4, 4.3, 4.2, 4.1, 4.0, 3.4, or 3.3` | `latest`          |
+| `output_format` | output serialization    | `default`, `csv`, `flat`, `ini`, `json`, or `xml`                  | `json`            |
+
+<Tip>
+  We accept virtually all ffprobe options with the same names so refer to the [ffprobe documentation](https://ffmpeg.org/ffprobe.html#Options) for details. 
+</Tip>
 
 ## Report Type: **Probe Report**
 
