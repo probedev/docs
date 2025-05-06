@@ -174,9 +174,9 @@ The `probe_report` parses, reconciles and canonicalizes the raw outputs from FFp
 | diff          | Include structural diff between MediaInfo and FFprobe outputs                                                             | `true,` `false`    | `false`     |
 | inject_json   | Inject the canonicalized metadata back into the original raw JSON payload so downstream tools can consume a single object | `true,` `false`    | `false`     |
 
-## ****Migrating from local ffprobeor  \*\*  mediaInfo****commands to the Probe API\*\*
+## **Migrating from local **commands to the Probe API
 
-> \_The PHP example below shows a one‑line swap: replace the local shell invocation with an HTTPS GET to the Probe API while keeping every \_`ffprobe`_parameter intact._
+> The PHP example below shows a one‑line swap: replace the local shell invocation with an HTTPS GET to the Probe API while keeping every `ffprobe`_parameter intact._
 >
 > ```php
 > // Local execution (be sure to escape vars in production)
