@@ -33,7 +33,7 @@ Here are the API call methods we currenlty support. This covers all of the most 
   - application/x-www-form-urlencoded
   - application/json
 
-## Specify Media Asset
+## Proivide a Media Asset
 
 Specify a direct link tomedia file hosted on any webserver or within a publically available S3 bucket.
 
@@ -58,7 +58,7 @@ or direct:
 s3://KEY:SECRET@BUCKET/PATH
 ```
 
-## Specify Report Types
+## Select Report Types
 
 Chose <u>one or all </u>report types: mediainfo, ffprobe, or probe_report:
 
@@ -126,3 +126,19 @@ The `probe_report` parses the raw JSON payloads from both ffprobe and mediainfo,
         "diff": true
     },
 ```
+
+## Deploy with one line of code
+
+We designed our API to make it painless and remove firction when migrating from a local execution of ffprobe or mediainfo to ffprobe or mediainfo with our API .  In the PHP ffprobe example below you will note you can migrate by substituting one line of code from a local shell script to a webservice while maintaining all of your existing paramters. 
+
+<CodeGroup>
+
+```php PHP ffprobe
+exec("ffprobe -i $url -output_format json -probesize $probesize -analyzeduration $analyzeduration -max_probe_packets $max_probe_packets -show_format -show_streams", $output);
+
+//changes to: 
+
+$output = file_get_contents("https://api.probe.dev/v1/probe/file?token=$token&url=$url&only=ffprobe&ffprobe[output_format]=json&ffprobe[probesize]=$probesize&ffprobe[analyzeduration]=$analyzeduration&ffprobe[max_probe_packets]=$max_probe_packets&ffprobe[show_format]=true&ffprobe[show_streams]=true");
+```
+
+</CodeGroup>
