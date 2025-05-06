@@ -50,18 +50,18 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
+          "anchor": "Playground",
+          "href": "https://console.probe.dev",
           "icon": "book-open-cover"
         },
         {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
+          "anchor": "Discord Server",
+          "href": "https://discord.gg/kYvSfywhru",
+          "icon": "discord"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
+          "anchor": "Get API Key",
+          "href": "https://conole.probe.dev/signup",
           "icon": "newspaper"
         }
       ]
