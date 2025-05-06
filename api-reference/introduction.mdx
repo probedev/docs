@@ -31,13 +31,11 @@ Your private beta welcome email will include a link to register for credentials.
 
 ## Endpoint
 
-<Card icon="code" href="https://api.probe.dev/v1/probe/file" cta="check it out">
-  <Info>
-    https://api.probe.dev/v1/probe/file
-  </Info>
-</Card>
+```bash
+https://api.probe.dev/v1/probe/file
+```
 
-We accept GET and  POST method.
+We accept GET and  POST:
 
 | **HTTP Method** | **Paramters in**                                                                        | **Use when**                   |
 | --------------- | --------------------------------------------------------------------------------------- | ------------------------------ |
@@ -109,9 +107,13 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
 }
 ```
 
-## Report Type: **MediaInfo**
+| Paramter | Type   | Allowed values                          | Purpose                                                          |
+| -------- | ------ | --------------------------------------- | ---------------------------------------------------------------- |
+| only     | string | `media info`,` ffprobe`, `probe_report` | Run exaclty one tool and return its raw output with no wrappers. |
 
-[MediaInfo](https://mediaarea.net/en/MediaInfo#google_vignette) is a convenient unified display of the most relevant technical and tag data for video and audio files. We support all the latest builds of mediainfo to ensure integrity with your production workflow.  Use the`version` tag to specify which version of mediainfo you would like run.  Use `latest`for the most recent version.
+## Report Type-  **MediaInfo**
+
+[MediaInfo](https://mediaarea.net/en/MediaInfo#google_vignette) summarizes the most relevant technical and tag information. Use `version` to pin a specific release; `latest` always picks the newest build we host.
 
 ```json
   },
@@ -122,9 +124,15 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
     },
 ```
 
-| **Parameter** | **Description**                                   | **Allowed Values**                                        | **Default Value** |
-| ------------- | ------------------------------------------------- | --------------------------------------------------------- | ----------------- |
-| version       | Specifies the verion of medianinfo which will run | `latest, 24.06, 23.11, 22.12, 21.09, 20.09, 19.09, 18.12` | `latest`          |
+| **Parameter** | **Description**                                   | **Allowed Values**                                                                                                                                                                                                                                   | **Default Value** |
+| ------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| `enabled`     | Toggle MediaInfo analysis                         | `true`, `false`                                                                                                                                                                                                                                      | `false`           |
+| `version`     | Specifies the verion of medianinfo which will run | `latest, 24.06, 23.11, 22.12, 21.09, 20.09, 19.09, 18.12`                                                                                                                                                                                            | `latest`          |
+| `output`      | Output format returned                            | `HTML`, `XML`, `JSON`, `EBUCore_1.8_ps`, `EBUCore_1.8_sp`, `EBUCore_1.8_ps_JSON`, `EBUCore_1.8_sp_JSON`, `EBUCore_1.6`, `FIMS_1.3`, `MPEG-7_Strict`, `MPEG-7_Relaxed`, `MPEG-7_Extended`, `PBCore_2.1`, `PBCore_2.0`, `PBCore_1.2`, or `NISO_Z39.87` | `JSON`            |
+
+<Tip>
+  You may pass any MediaInfo CLI flag in snake_case; names match the original tool.
+</Tip>
 
 `only`is a parameter with which you can get mediainfo response without any wrappers, meaning you get what you would get if you ran mediainfo locally. Although our defaults are usually sufficient, you can pass most mediainfo parameters. Our API parameters have the same names as mediainfo (but snake cased), so it is very easy to pass the parameters you used previously to run mediainfo. So you don't need to change your code to handle the received response we return.
 
