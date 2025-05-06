@@ -36,10 +36,9 @@
       },
       {
         "tab": "API Reference",
-        "openapi": "https://api.probe.dev/frontend/api/v1/openapi.json"
-       }
-  ]
-}
+        "openapi": "https://api.probe.dev/frontend/api/v1/openapi.json",
+        "groups": [
+          {
             "group": "API Documentation",
             "pages": [
               "api-reference/introduction"
