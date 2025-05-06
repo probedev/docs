@@ -1,0 +1,18 @@
+---
+title: "Getting started with Probe API"
+description: "Swap a single line in your pipeline to access ultra‑fast, consistent media analysis powered by ffprobe, MediaInfo, and our enhanced Probe Report — no installs or updates required."
+---
+
+<Warning>
+**Private beta** &nbsp;—&nbsp; want in? [Apply here](https://www.probe.dev/#privatebeta).
+</Warning>
+
+## Quick start
+
+### Minimal request
+
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "only=ffprobe" \
+  --data-urlencode "url=https://probelibrary.s3.amazonaws.com/sample-source.mp4"

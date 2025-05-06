@@ -1,41 +1,51 @@
 ---
-title: "Welcome video engineers and software developers!"
-description: "By substituting one line of code in your workflow you can take advantage of an ultra fast and accurate media analysis service and never think about installing, updating, or fussing with inconsistent results from OSS software again. Start quickly with simply with just a token and url or customize the reports based on more sophisticated needs."
+title: "Getting started with the Probe API"
+description: "Swap a single line in your pipeline to access ultra‑fast, consistent media analysis powered by ffprobe, mediaInfo, and our enhanced Probe Report — no installs or updates required."
 ---
 
 <Warning>
-  **We are currently in private beta. If you would like to join the program** [<u>submit a request.</u>](https://www.probe.dev/#privatebeta)
+  **We are currently in private beta. If you would like to join the program** [submit a request. ](https://www.probe.dev/#privatebeta)
 </Warning>
 
-## API Credentials
+## Quickstart - Minimal request
+
+```php
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "only=ffprobe" \
+  --data-urlencode "url=https://probelibrary.s3.amazonaws.com/sample-source.mp4"
+```
+
+## Authentication
+
+| **Method**           | **Example**                              | **Notes**                        |
+| -------------------- | ---------------------------------------- | -------------------------------- |
+| Header (recommended) | `Authorization: Bearer $PROBE_API_TOKEN` | Keeps secrets out of URLs & logs |
+| Query string         | `?token=$PROBE_API_TOKEN`                | Handy for quick cURL tests       |
+
+## \
+API Credentials
 
 Your private beta welcome email will include a link to register for credentials. After you have registered and authenticated your API token and logs will securely surface within our API reference docs.
 
 ## API Endpoint
 
-Every request is sent to our API endpoint using either the GET or POST method. All responses are formatted using JSON and follow a specific response message format
+<Info>
+  https://api.probe.dev/v1/probe/file
+</Info>
 
-```
-https://api.probe.dev/v1/probe/file
-```
+We accept GET and  POST method. 
 
-###  API Call Methods: GET or POST 
+| **HTTP Method** | **Paramters in**                                                                        | **Use when**                   |
+| --------------- | --------------------------------------------------------------------------------------- | ------------------------------ |
+| `GET`           | Query string                                                                            | Small payloads, quick tests    |
+| `POST`          | Body (`multipart/form-data`,`application/x-www-form-urlencoded`, or  `application/json` | Large payloads or many options |
 
-Here are the API call methods we currenlty support. This covers all of the most popular methods of passing parameters over http, so you can use what they are more comfortable with.
+### 
 
-- GET request (parameters are included as part of url) For example:
+## Proivide the Media Asset
 
-  ```powershell
-  curl -X GET https://api.probe.dev/v1/probe/file?token=developer-token&only=ffprobe
-  ```
-- POST request with three possible Content-Type headers Parameter format is the same as for GET, but parameters are included inside the POST body:
-  - multipart/form-data
-  - application/x-www-form-urlencoded
-  - application/json
-
-## Proivide a Media Asset
-
-Specify a direct link tomedia file hosted on any webserver or within a publically available S3 bucket.
+Specify a direct link to media file hosted on any webserver or within a publically available S3 bucket.
 
 ```json
 {
@@ -48,27 +58,37 @@ Specify a direct link tomedia file hosted on any webserver or within a publicall
 
 To use key-based authorization for a media asset specify your key and secret in the url path.  For more information about setting up key based authorization visit [AWS Identity and Access Managment.](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) \
 \
-A  direct http link with the KEY and SECRET included: 
+A  direct http link with the KEY and SECRET included:
 
 ```http
 http://KEY:SECRET@s3.amazonaws.com/BUCKET/PATH
-```
-
-or  the S3 object‑storage URI scheme :
-
-```
 s3://KEY:SECRET@BUCKET/PATH
 ```
 
-## The Most Simple Request Example
+### Using Amazon S3 with a Presigned URL 
 
-```powershell
-curl -X GET https://api.probe.dev/v1/probe/file?token=developer-token&only=ffprobe
+If your object is private, create a **pre‑signed URL** and pass it in the `url` field:
+
+```json
+  "url": "https://my-bucket.s3.amazonaws.com/sample-video.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20250506%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250506T121314Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=9a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1"
 ```
 
-## Select Report Types
+_The query string grants read‑only access to _`sample-video.mp4`_for 24 hours (86 400 seconds)._ 
 
-Chose <u>one or all </u>report types: `mediainfo`, `ffprobe`, or` probe_report`:
+#### **How to generate a pre‑signed URL**
+
+| **Tool**           | **One-liner**                                                                                                                                                                                                               | **Notes**                                                              |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **AWS CLI**        | aws s3 presign s3://my-bucket/sample-video.mp4 --expires-in 86400                                                                                                                                                           | Requires the AWS CLI with valid credentials set in ~/.aws/credentials. |
+| **Python (Boto3)** | python\\nimport boto3, datetime\\ns3 = boto3.client('s3')\\nurl = s3.generate_presigned_url(\\n    'get_object',\\n    Params={'Bucket': 'my-bucket', 'Key': 'sample-video.mp4'},\\n    ExpiresIn=86400\\n)\\nprint(url)\\n | Works inside Lambdas or any environment with the boto3 library.        |
+
+<Tip>
+  > **Tip:** Keep expiry times short (e.g., 15 min – 24 h) and rotate keys regularly. The Probe API only needs **read** access; avoid embedding write‑capable keys in URLs.
+</Tip>
+
+## Selecting  Report Types
+
+Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`. 
 
 ```json
 {
@@ -86,9 +106,15 @@ Chose <u>one or all </u>report types: `mediainfo`, `ffprobe`, or` probe_report`:
 }
 ```
 
+Global request options 
+
+| **Parameter ** | **Type** | **Allowed Values**                     | **Purpose**                                                      |
+| -------------- | -------- | -------------------------------------- | ---------------------------------------------------------------- |
+| `only`         | string   | `mediainfo`,`ffprobe`, `probe_report ` | Run exaclty one tool and return its raw output with no wreapper. |
+
 ## Report Type: **MediaInfo**
 
-[MediaInfo](https://mediaarea.net/en/MediaInfo#google_vignette) is a convenient unified display of the most relevant technical and tag data for video and audio files. We support all the latest builds of mediainfo to ensure integrity with your production workflow.  Use the`version` tag to specify which version of mediainfo you would like run.  Use `latest`for the most recent version.
+[MediaInfo](https://mediaarea.net/en/MediaInfo#google_vignette) is a convenient unified display of the most relevant technical and tag data for video and audio files. Use the`version`to pin a specific release; `latest`always picks the newest build we host. 
 
 ```json
   },
@@ -99,11 +125,15 @@ Chose <u>one or all </u>report types: `mediainfo`, `ffprobe`, or` probe_report`:
     },
 ```
 
-| **Parameter** | **Description**                                   | **Allowed Values**                                        | **Default Value** |
-| ------------- | ------------------------------------------------- | --------------------------------------------------------- | ----------------- |
-| version       | Specifies the verion of medianinfo which will run | `latest, 24.06, 23.11, 22.12, 21.09, 20.09, 19.09, 18.12` | `latest`          |
+| **Parameter** | **Description**           | **Allowed Values**                                        | **Default Value** |
+| ------------- | ------------------------- | --------------------------------------------------------- | ----------------- |
+| `enabled`     | Toggle MediaInfo analysis | `true`, `false`                                           | `false`           |
+| `version`     | Medianinfo version to run | `latest, 24.06, 23.11, 22.12, 21.09, 20.09, 19.09, 18.12` | `latest`          |
+| `output `     | Output format returned    | `default`, `csv`, `flat`, `ini`, `json`, or `xml`         | `JSON`            |
 
-`only`is a parameter with which you can get mediainfo response without any wrappers, meaning you get what you would get if you ran mediainfo locally. Although our defaults are usually sufficient, you can pass most mediainfo parameters. Our API parameters have the same names as mediainfo (but snake cased), so it is very easy to pass the parameters you used previously to run mediainfo. So you don't need to change your code to handle the received response we return.
+<Tip>
+  You may pass any MediaInfo CLI flag in snake_case; names match the original tool.
+</Tip>
 
 ## Report Type: **FFprobe**
 
@@ -120,7 +150,9 @@ Chose <u>one or all </u>report types: `mediainfo`, `ffprobe`, or` probe_report`:
 
 | **Parameter** | **Description**                                | **Allowed Values**                                                 | **Default Value** |
 | ------------- | ---------------------------------------------- | ------------------------------------------------------------------ | ----------------- |
-| version       | Specifies the verion of ffprobe which will run | `latest, 7.0, 6.0, 5.1, 5.0, 4.4, 4.3, 4.2, 4.1, 4.0, 3.4, or 3.3` | `latest`          |
+| `enabled`     | Toggle Ffprobe analysis                        | `true`, `false`                                                    | `false`           |
+| `version`     | Specifies the verion of ffprobe which will run | `latest, 7.0, 6.0, 5.1, 5.0, 4.4, 4.3, 4.2, 4.1, 4.0, 3.4, or 3.3` | `latest`          |
+| `output`      | Output format returned                         | `default`, `csv`, `flat`, `ini`, `json`, or `xml`                  | `JSON`            |
 
 ## Report Type: **Probe Report**
 
@@ -135,9 +167,9 @@ The `probe_report` parses the raw JSON payloads from both ffprobe and mediainfo,
     },
 ```
 
-## **Migrating from local **ffprobe**or  **  mediaInfo**commands to the Probe API** 
+## ****Migrating from local ffprobeor  \*\*  mediaInfo****commands to the Probe API\*\*
 
-> _The PHP example below shows a one‑line swap: replace the local shell invocation with an HTTPS GET to the Probe API while keeping every _`ffprobe`_parameter intact._ 
+> \_The PHP example below shows a one‑line swap: replace the local shell invocation with an HTTPS GET to the Probe API while keeping every \_`ffprobe`_parameter intact._
 >
 > ```php
 > // Local execution (be sure to escape vars in production)
