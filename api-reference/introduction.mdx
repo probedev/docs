@@ -40,7 +40,7 @@ We accept GET and  POST:
 | `GET`           | Query string                                                                            | Small payloads, quick tests    |
 | `POST`          | Body (`multipart/form-data`,`application/x-www-form-urlencoded`, or  `application/json` | Large payloads or many options |
 
-## Proivide the Media Asset
+## Supplying  a Media Asset
 
 Specify a direct link to media file hosted on any webserver or within a publically available S3 bucket.
 
@@ -62,7 +62,7 @@ http://KEY:SECRET@s3.amazonaws.com/BUCKET/PATH
 s3://KEY:SECRET@BUCKET/PATH
 ```
 
-### Using Amazon S3 with a Presigned URL
+### Using a pre-signed Amazon S3  URL
 
 If your object is private, create a **pre‑signed URL** and pass it in the `url` field:
 
@@ -70,20 +70,24 @@ If your object is private, create a **pre‑signed URL** and pass it in the `url
   "url": "https://my-bucket.s3.amazonaws.com/sample-video.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20250506%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250506T121314Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=9a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1"
 ```
 
-The query string grants read‑only access to `sample-video.mp4` for 24 hours (86 400 seconds).
+The example query string would grant read‑only access to `sample-video.mp4` for 24 hours (86 400 seconds).
 
-#### **How to generate a pre‑signed URL**
+#### **How to generate a pre‑signed S3 URL**
 
-| **Tool**           | **One-liner**                                                     | **Notes**                                                              |
-| ------------------ | ----------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **AWS CLI**        | aws s3 presign s3://my-bucket/sample-video.mp4 --expires-in 86400 | Requires the AWS CLI with valid credentials set in ~/.aws/credentials. |
-| **Python (Boto3)** |                                                                   |                                                                        |
+| **Tool**           | **One-liner**                                                                                                                                                                                                               | **Notes**                                                              |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **AWS CLI**        | aws s3 presign s3://my-bucket/sample-video.mp4 --expires-in 86400                                                                                                                                                           | Requires the AWS CLI with valid credentials set in ~/.aws/credentials. |
+| **Python (Boto3)** | python\\nimport boto3, datetime\\ns3 = boto3.client('s3')\\nurl = s3.generate_presigned_url(\\n    'get_object',\\n    Params={'Bucket': 'my-bucket', 'Key': 'sample-video.mp4'},\\n    ExpiresIn=86400\\n)\\nprint(url)\\n | Works inside Lambdas or any environment with the boto3 library.        |
 
 One liner to generare your own:
 
 ```bash
 aws s3 presign s3://my-bucket/sample-video.mp4 --expires-in 86400
 ```
+
+<Note>
+  > **Tip:** Keep expiry times short (e.g., 15 min – 24 h) and rotate keys regularly. The Probe API only needs **read** access; avoid embedding write‑capable keys in URLs.
+</Note>
 
 ## Selecting  Report Types
 
@@ -174,8 +178,8 @@ The `probe_report` parses, reconciles and canonicalizes the raw outputs from FFp
 | diff          | Include structural diff between MediaInfo and FFprobe outputs                                                             | `true,` `false`    | `false`     |
 | inject_json   | Inject the canonicalized metadata back into the original raw JSON payload so downstream tools can consume a single object | `true,` `false`    | `false`     |
 
-## **Migrating from local **commands to the Probe API
-
+> ## **Migrating from local **commands to the Probe API
+>
 > The PHP example below shows a one‑line swap: replace the local shell invocation with an HTTPS GET to the Probe API while keeping every `ffprobe`_parameter intact._
 >
 > ```php
