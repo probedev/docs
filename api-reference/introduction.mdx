@@ -16,6 +16,8 @@ curl -G https://api.probe.dev/v1/probe/file \
   --data-urlencode "url=https://probelibrary.s3.amazonaws.com/sample-source.mp4"
 ```
 
+The response is standard JSON identical to what a local `ffprobe` run would return.
+
 ## Authentication
 
 | **Method**           | **Example**                              | **Notes**                        |
@@ -23,25 +25,24 @@ curl -G https://api.probe.dev/v1/probe/file \
 | Header (recommended) | `Authorization: Bearer $PROBE_API_TOKEN` | Keeps secrets out of URLs & logs |
 | Query string         | `?token=$PROBE_API_TOKEN`                | Handy for quick cURL tests       |
 
-## \
-API Credentials
+After registering, you’ll see every request and response in the **Logs** tab of these docs.
 
 Your private beta welcome email will include a link to register for credentials. After you have registered and authenticated your API token and logs will securely surface within our API reference docs.
 
-## API Endpoint
+## Endpoint
 
-<Info>
-  https://api.probe.dev/v1/probe/file
-</Info>
+<Card icon="code" href="https://api.probe.dev/v1/probe/file" cta="check it out">
+  <Info>
+    https://api.probe.dev/v1/probe/file
+  </Info>
+</Card>
 
-We accept GET and  POST method. 
+We accept GET and  POST method.
 
 | **HTTP Method** | **Paramters in**                                                                        | **Use when**                   |
 | --------------- | --------------------------------------------------------------------------------------- | ------------------------------ |
 | `GET`           | Query string                                                                            | Small payloads, quick tests    |
 | `POST`          | Body (`multipart/form-data`,`application/x-www-form-urlencoded`, or  `application/json` | Large payloads or many options |
-
-### 
 
 ## Proivide the Media Asset
 
@@ -65,7 +66,7 @@ http://KEY:SECRET@s3.amazonaws.com/BUCKET/PATH
 s3://KEY:SECRET@BUCKET/PATH
 ```
 
-### Using Amazon S3 with a Presigned URL 
+### Using Amazon S3 with a Presigned URL
 
 If your object is private, create a **pre‑signed URL** and pass it in the `url` field:
 
@@ -73,22 +74,24 @@ If your object is private, create a **pre‑signed URL** and pass it in the `url
   "url": "https://my-bucket.s3.amazonaws.com/sample-video.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20250506%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250506T121314Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=9a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1"
 ```
 
-_The query string grants read‑only access to _`sample-video.mp4`_for 24 hours (86 400 seconds)._ 
+The query string grants read‑only access to `sample-video.mp4` for 24 hours (86 400 seconds).
 
 #### **How to generate a pre‑signed URL**
 
-| **Tool**           | **One-liner**                                                                                                                                                                                                               | **Notes**                                                              |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **AWS CLI**        | aws s3 presign s3://my-bucket/sample-video.mp4 --expires-in 86400                                                                                                                                                           | Requires the AWS CLI with valid credentials set in ~/.aws/credentials. |
-| **Python (Boto3)** | python\\nimport boto3, datetime\\ns3 = boto3.client('s3')\\nurl = s3.generate_presigned_url(\\n    'get_object',\\n    Params={'Bucket': 'my-bucket', 'Key': 'sample-video.mp4'},\\n    ExpiresIn=86400\\n)\\nprint(url)\\n | Works inside Lambdas or any environment with the boto3 library.        |
+| **Tool**           | **One-liner**                                                     | **Notes**                                                              |
+| ------------------ | ----------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **AWS CLI**        | aws s3 presign s3://my-bucket/sample-video.mp4 --expires-in 86400 | Requires the AWS CLI with valid credentials set in ~/.aws/credentials. |
+| **Python (Boto3)** |                                                                   |                                                                        |
 
-<Tip>
-  > **Tip:** Keep expiry times short (e.g., 15 min – 24 h) and rotate keys regularly. The Probe API only needs **read** access; avoid embedding write‑capable keys in URLs.
-</Tip>
+One liner to generare your own:
+
+```bash
+aws s3 presign s3://my-bucket/sample-video.mp4 --expires-in 86400
+```
 
 ## Selecting  Report Types
 
-Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`. 
+Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
 
 ```json
 {
@@ -106,15 +109,9 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
 }
 ```
 
-Global request options 
-
-| **Parameter ** | **Type** | **Allowed Values**                     | **Purpose**                                                      |
-| -------------- | -------- | -------------------------------------- | ---------------------------------------------------------------- |
-| `only`         | string   | `mediainfo`,`ffprobe`, `probe_report ` | Run exaclty one tool and return its raw output with no wreapper. |
-
 ## Report Type: **MediaInfo**
 
-[MediaInfo](https://mediaarea.net/en/MediaInfo#google_vignette) is a convenient unified display of the most relevant technical and tag data for video and audio files. Use the`version`to pin a specific release; `latest`always picks the newest build we host. 
+[MediaInfo](https://mediaarea.net/en/MediaInfo#google_vignette) is a convenient unified display of the most relevant technical and tag data for video and audio files. We support all the latest builds of mediainfo to ensure integrity with your production workflow.  Use the`version` tag to specify which version of mediainfo you would like run.  Use `latest`for the most recent version.
 
 ```json
   },
@@ -125,15 +122,11 @@ Global request options
     },
 ```
 
-| **Parameter** | **Description**           | **Allowed Values**                                        | **Default Value** |
-| ------------- | ------------------------- | --------------------------------------------------------- | ----------------- |
-| `enabled`     | Toggle MediaInfo analysis | `true`, `false`                                           | `false`           |
-| `version`     | Medianinfo version to run | `latest, 24.06, 23.11, 22.12, 21.09, 20.09, 19.09, 18.12` | `latest`          |
-| `output `     | Output format returned    | `default`, `csv`, `flat`, `ini`, `json`, or `xml`         | `JSON`            |
+| **Parameter** | **Description**                                   | **Allowed Values**                                        | **Default Value** |
+| ------------- | ------------------------------------------------- | --------------------------------------------------------- | ----------------- |
+| version       | Specifies the verion of medianinfo which will run | `latest, 24.06, 23.11, 22.12, 21.09, 20.09, 19.09, 18.12` | `latest`          |
 
-<Tip>
-  You may pass any MediaInfo CLI flag in snake_case; names match the original tool.
-</Tip>
+`only`is a parameter with which you can get mediainfo response without any wrappers, meaning you get what you would get if you ran mediainfo locally. Although our defaults are usually sufficient, you can pass most mediainfo parameters. Our API parameters have the same names as mediainfo (but snake cased), so it is very easy to pass the parameters you used previously to run mediainfo. So you don't need to change your code to handle the received response we return.
 
 ## Report Type: **FFprobe**
 
@@ -150,9 +143,7 @@ Global request options
 
 | **Parameter** | **Description**                                | **Allowed Values**                                                 | **Default Value** |
 | ------------- | ---------------------------------------------- | ------------------------------------------------------------------ | ----------------- |
-| `enabled`     | Toggle Ffprobe analysis                        | `true`, `false`                                                    | `false`           |
-| `version`     | Specifies the verion of ffprobe which will run | `latest, 7.0, 6.0, 5.1, 5.0, 4.4, 4.3, 4.2, 4.1, 4.0, 3.4, or 3.3` | `latest`          |
-| `output`      | Output format returned                         | `default`, `csv`, `flat`, `ini`, `json`, or `xml`                  | `JSON`            |
+| version       | Specifies the verion of ffprobe which will run | `latest, 7.0, 6.0, 5.1, 5.0, 4.4, 4.3, 4.2, 4.1, 4.0, 3.4, or 3.3` | `latest`          |
 
 ## Report Type: **Probe Report**
 
