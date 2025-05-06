@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "https://api.probe.dev/frontend/api/v1/openapi.json"
     }
   ],
   "security": [
