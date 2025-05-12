@@ -35,7 +35,7 @@ https://api.probe.dev/v1/probe/file
 
 We accept GET and POST:
 
-| **Method** | **Parameters in**                                                                        | **Use when**                   |
+| **Method** | **Parameters in**                                                                       | **Use when**                   |
 | ---------- | --------------------------------------------------------------------------------------- | ------------------------------ |
 | `GET`      | Query string                                                                            | Small payloads, quick tests    |
 | `POST`     | Body (`multipart/form-data`,`application/x-www-form-urlencoded`, or `application/json`) | Large payloads or many options |
@@ -93,9 +93,10 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
 }
 ```
 
-| **Parameter** | **Type**   | **Allowed values**                          | **Purpose**                                                          |
-| ------------- | ---------- | ------------------------------------------- | -------------------------------------------------------------------- |
-| only          | string     | `mediainfo`, `ffprobe`, `probe_report`      | Run exactly one tool and return its raw output with no wrappers.     |
+| **Parameter** | **Type** | **Allowed values**                     | **Purpose**                                                                                                               |
+| ------------- | -------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| only          | string   | `mediainfo`, `ffprobe`, `probe_report` | Run exactly one tool and return its raw output with no wrappers.                                                          |
+| inject_json   | string   | `true`, `false`                        | Inject the canonicalized metadata back into the original raw JSON payload so downstream tools can consume a single object |
 
 ## Report Type — **MediaInfo**
 
@@ -113,8 +114,8 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
 
 | **Parameter** | **Description**                                   | **Allowed Values**                                                                                                                                                                                                                                   | **Default** |
 | ------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `enabled`     | Toggle MediaInfo analysis                         | `true`, `false`                                                                                                                                                                                                                                      | `false`     |
-| `version`     | Specifies the version of mediainfo which will run | `latest`, `24.06`, `23.11`, `22.12`, `21.09`, `20.09`, `19.09`, `18.12`                                                                                                                                                                             | `latest`    |
+| `enabled`     | Toggle MediaInfo analysis                         | `true`, `false`                                                                                                                                                                                                                                      | `true`      |
+| `version`     | Specifies the version of mediainfo which will run | `latest`, `24.06`, `23.11`, `22.12`, `21.09`, `20.09`, `19.09`, `18.12`                                                                                                                                                                              | `latest`    |
 | `output`      | Output format returned                            | `HTML`, `XML`, `JSON`, `EBUCore_1.8_ps`, `EBUCore_1.8_sp`, `EBUCore_1.8_ps_JSON`, `EBUCore_1.8_sp_JSON`, `EBUCore_1.6`, `FIMS_1.3`, `MPEG-7_Strict`, `MPEG-7_Relaxed`, `MPEG-7_Extended`, `PBCore_2.1`, `PBCore_2.0`, `PBCore_1.2`, or `NISO_Z39.87` | `JSON`      |
 
 <Tip>
@@ -135,11 +136,11 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
 }
 ```
 
-| **Parameter**   | **Description**         | **Allowed Values**                                                 | **Default** |
-| --------------- | ----------------------- | ------------------------------------------------------------------ | ----------- |
-| `enabled`       | Toggle ffprobe analysis | `true`, `false`                                                    | `false`     |
+| **Parameter**   | **Description**         | **Allowed Values**                                                                       | **Default** |
+| --------------- | ----------------------- | ---------------------------------------------------------------------------------------- | ----------- |
+| `enabled`       | Toggle ffprobe analysis | `true`, `false`                                                                          | `true`      |
 | `version`       | ffprobe build to run    | `latest`, `7.0`, `6.0`, `5.1`, `5.0`, `4.4`, `4.3`, `4.2`, `4.1`, `4.0`, `3.4`, or `3.3` | `latest`    |
-| `output_format` | Output serialization    | `default`, `csv`, `flat`, `ini`, `json`, or `xml`                  | `json`      |
+| `output_format` | Output serialization    | `default`, `csv`, `flat`, `ini`, `json`, or `xml`                                        | `json`      |
 
 <Tip>
   We accept virtually all ffprobe options with the same names so refer to the [ffprobe documentation](https://ffmpeg.org/ffprobe.html#Options) for details.
@@ -147,7 +148,7 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
 
 ## Report Type — **Probe Report**
 
-The `probe_report` parses, reconciles and canonicalizes the raw outputs from FFprobe and MediaInfo, then applies machine‑learning heuristics (trained on >1 billion assets) to correct inconsistencies and deliver a single, authoritative metadata set.
+The `probe_report` parses, reconciles and canonicalizes the raw outputs from FFprobe and MediaInfo, then applies machine‑learning heuristics (trained on \>1 billion assets) to correct inconsistencies and deliver a single, authoritative metadata set.
 
 ```json
 {
@@ -159,11 +160,10 @@ The `probe_report` parses, reconciles and canonicalizes the raw outputs from FFp
 }
 ```
 
-| **Parameter** | **Description**                                                                                                           | **Allowed values** | **Default** |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------ | ----------- |
-| enabled       | Toggle Probe Report generation                                                                                            | `true`, `false`    | `false`     |
-| diff          | Include structural diff between MediaInfo and FFprobe outputs                                                             | `true`, `false`    | `false`     |
-| inject_json   | Inject the canonicalized metadata back into the original raw JSON payload so downstream tools can consume a single object | `true`, `false`    | `false`     |
+| **Parameter** | **Description**                                               | **Allowed values** | **Default** |
+| ------------- | ------------------------------------------------------------- | ------------------ | ----------- |
+| enabled       | Toggle Probe Report generation                                | `true`, `false`    | `true`      |
+| diff          | Include structural diff between MediaInfo and FFprobe outputs | `true`, `false`    | `false`     |
 
 ## Migrating from local commands to the Probe API
 
