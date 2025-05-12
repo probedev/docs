@@ -73,28 +73,6 @@ If your object is private, create a **pre‑signed URL** and pass it in the `url
 
 The query string grants read‑only access to `sample-video.mp4` for 24 hours (86 400 seconds).
 
-#### **How to generate a pre‑signed URL**
-
-| **Tool**           | **One-liner**                                                                                                                                                                                                               | **Notes**                                                              |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **AWS CLI**        | aws s3 presign s3://my-bucket/sample-video.mp4 --expires-in 86400                                                                                                                                                           | Requires the AWS CLI with valid credentials set in ~/.aws/credentials. |
-| **Python (Boto3)** | ```python
-import boto3
-s3 = boto3.client('s3')
-url = s3.generate_presigned_url(
-    'get_object',
-    Params={'Bucket': 'my-bucket', 'Key': 'sample-video.mp4'},
-    ExpiresIn=86400
-)
-print(url)
-``` | Works inside Lambdas or any environment with the boto3 library. |
-
-One liner to generate your own:
-
-```bash
-aws s3 presign s3://my-bucket/sample-video.mp4 --expires-in 86400
-```
-
 ## Selecting Report Types
 
 Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
