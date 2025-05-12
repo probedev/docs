@@ -96,7 +96,7 @@ Enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
 | **Parameter** | **Type** | **Allowed values**                     | **Purpose**                                                                                                               |
 | ------------- | -------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | only          | string   | `mediainfo`, `ffprobe`, `probe_report` | Run exactly one tool and return its raw output with no wrappers.                                                          |
-| inject_json   | string   | `true`, `false`                        | Inject the canonicalized metadata back into the original raw JSON payload so downstream tools can consume a single object |
+| inject_json   | boolean  | `true`, `false`                        | Inject the canonicalized metadata back into the original raw JSON payload so downstream tools can consume a single object |
 
 ## Report Type — **MediaInfo**
 
