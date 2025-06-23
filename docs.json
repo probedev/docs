@@ -1,35 +1,52 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Probe.dev",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#1a1a1a",
+    "light": "#ffffff",
+    "dark": "#0a0a0a"
   },
   "favicon": "/favicon.svg",
+  "customCss": "/styles.css",
+  "seo": {
+    "metatags": {
+      "og:image": "https://probe.dev/og-image.png",
+      "og:title": "Probe.dev API Documentation",
+      "og:description": "Comprehensive media analysis API with FFprobe, MediaInfo, and ML-enhanced Probe Report",
+      "og:site_name": "Probe.dev",
+      "og:type": "website",
+      "twitter:card": "summary_large_image",
+      "twitter:title": "Probe.dev API Documentation",
+      "twitter:description": "Comprehensive media analysis API with FFprobe, MediaInfo, and ML-enhanced Probe Report",
+      "twitter:image": "https://probe.dev/og-image.png",
+      "keywords": "media analysis, FFprobe, MediaInfo, video analysis, audio analysis, Probe Report, API, media metadata",
+      "description": "Comprehensive media analysis API with FFprobe, MediaInfo, and ML-enhanced Probe Report for video and audio file processing",
+      "author": "Probe.dev",
+      "robots": "index, follow",
+      "language": "en",
+      "theme-color": "#1a1a1a"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Getting Started",
         "groups": [
-          {
-            "group": "Get Started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
-            ]
-          },
           {
             "group": "Essentials",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/settings",
-              "essentials/navigation",
-              "essentials/reusable-snippets"
+              "index",
+              "quickstart",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Integration Guides",
+            "pages": [
+              "guides/report-types",
+              "guides/media-sources",
+              "guides/migration-guide"
             ]
           }
         ]
@@ -42,14 +59,25 @@
             "pages": [
               "api-reference/introduction"
             ]
+          }
+        ]
+      },
+      {
+        "tab": "Media Formats",
+        "groups": [
+          {
+            "group": "Codecs & Formats",
+            "pages": [
+              "reference/audio-codecs",
+              "reference/video-codecs",
+              "reference/container-formats"
+            ]
           },
           {
-            "group": "Endpoint Examples",
+            "group": "Data References",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "reference/probe-report-parameters",
+              "reference/sample-media-library"
             ]
           }
         ]
@@ -58,45 +86,55 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Get API Key",
+          "href": "https://www.probe.dev/dashboard",
+          "icon": "key"
         },
         {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
+          "anchor": "Dashboard",
+          "href": "https://www.probe.dev/dashboard",
+          "icon": "square-terminal"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "API Status",
+          "href": "https://status.probe.dev",
+          "icon": "chart-line"
+        },
+        {
+          "anchor": "Discord",
+          "href": "https://discord.gg/kYvSfywhru",
+          "icon": "discord"
         }
       ]
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/Probe-logo-black.png",
+    "dark": "/logo/Probe-logo-white.png"
   },
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "Dashboard",
+        "href": "https://www.probe.dev/dashboard"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Get API Key",
+      "href": "https://www.probe.dev/dashboard"
     }
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "website": "https://probe.dev",
+      "github": "https://github.com/probe-dev"
     }
-  }
+  },
+  "integrations": {
+    "ga4": {
+      "measurementId": "G-EYJ6M6K4PC"
+    }
+  },
+  "openapi": "/api-reference/openapi.json"
 }

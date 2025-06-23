@@ -1,0 +1,104 @@
+---
+title: 'Authentication'
+description: 'Learn how to authenticate with the Probe.dev API'
+---
+
+## API Token
+
+After [signing up](https://www.probe.dev/dashboard), you'll receive your `PROBE_API_TOKEN`. This token identifies your account and provides access to the API.
+
+<Warning>
+Keep your API token secure and never expose it in client-side code or public repositories.
+</Warning>
+
+## Authentication Methods
+
+Choose the method that works best for your use case:
+
+### Header Authentication (Recommended)
+
+Include your token in the `Authorization` header:
+
+```bash
+curl -H "Authorization: Bearer $PROBE_API_TOKEN" \
+  "https://api.probe.dev/v1/probe/file?url=https://example.com/video.mp4&only=ffprobe"
+```
+
+**Benefits:**
+- Keeps secrets out of URLs and server logs
+- More secure than query parameters
+- Standard HTTP authentication method
+
+### Query Parameter Authentication
+
+Include your token as a query parameter:
+
+```bash
+curl "https://api.probe.dev/v1/probe/file?token=$PROBE_API_TOKEN&url=https://example.com/video.mp4&only=ffprobe"
+```
+
+**Use cases:**
+- Quick testing with cURL
+- Simple integrations
+- When headers are difficult to set
+
+## Getting Your API Token
+
+1. **Sign up** at [probe.dev/dashboard](https://www.probe.dev/dashboard)
+2. **Verify your email** address
+3. **Access your dashboard** to view your API token
+4. **Copy your API token** for use in requests
+
+## Rate Limits & Usage
+
+Your API usage is tracked per token. Monitor your usage in the [dashboard](https://www.probe.dev/dashboard) to see:
+
+- **Request count** - Total API calls made
+- **Processing time** - Cumulative analysis time  
+- **Data processed** - Total media data analyzed
+- **Queue metrics** - Current processing status
+
+## Security Best Practices
+
+<AccordionGroup>
+  <Accordion icon="shield-check" title="Environment Variables">
+    Store your API token in environment variables rather than hardcoding it:
+    
+    ```bash
+    export PROBE_API_TOKEN="your_token_here"
+    ```
+  </Accordion>
+  
+  <Accordion icon="rotate" title="Token Rotation">
+    Regularly rotate your API tokens, especially if:
+    - They may have been compromised
+    - Team members with access have left
+    - You're migrating to a new system
+  </Accordion>
+  
+  <Accordion icon="eye-slash" title="Access Control">
+    - Never commit tokens to version control
+    - Use secure secret management in production
+    - Limit token access to necessary team members
+    - Monitor usage for unexpected patterns
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Make Your First Request"
+    icon="play"
+    href="/quickstart"
+  >
+    Try the API with a simple cURL command
+  </Card>
+  <Card
+    title="Report Types"
+    icon="chart-bar"
+    href="/guides/report-types"
+  >
+    Learn about FFprobe, MediaInfo, and Probe Report
+  </Card>
+</CardGroup> 

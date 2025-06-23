@@ -1,0 +1,246 @@
+---
+title: 'Probe Report Parameters'
+description: 'Complete reference for Probe Report output parameters'
+---
+
+## Overview
+
+The Probe Report provides canonicalized, ML-enhanced metadata by analyzing and reconciling outputs from both FFprobe and MediaInfo. This reference documents all available parameters in the Probe Report response.
+
+<Note>
+Probe Report uses machine learning heuristics trained on over 1 billion media assets to correct inconsistencies and provide authoritative metadata.
+</Note>
+
+## Parameter Reference
+
+| Path                               | Data type       | Optional | Description                                                                                                                                        | Example              |
+| :--------------------------------- | :-------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------- |
+| codec->id                          | uint            | No       | Numeric codec ID                                                                                                                                   | 1983148141           |
+| codec->four\_cc                    | string (4 char) | Yes      | Codec FourCC (four-character code used to uniquely identify media codec/formats)                                                                   | "mp4v" - mpeg4 video |
+| codec->name                        | string          | Yes      | Human readable video codec name. Multiple four\_cc can mean the same codec name.<br /><br />For example "h264" and "avc1", "mpg4" and "mp4v", etc. | "mpeg4"              |
+| size->width                        | int             | Yes      | Video frame width                                                                                                                                  | 1920                 |
+| size->height                       | int             | Yes      | Video frame height                                                                                                                                 | 1080                 |
+| size->display\_aspect\_ratio       | float           | Yes      | Display aspect ratio. Rounded to 3 decimal points.                                                                                                 | 1.778 (for 16:9)     |
+| size->sample\_aspect\_ratio        | float           | Yes      | Sample aspect ratio. Rounded to 3 decimal points.                                                                                                  | 1.333 (for 4:3)      |
+| frame\_rate->numerator             | uint            | No       | Frame rate numerator                                                                                                                               | 30000                |
+| frame\_rate->denominator           | uint            | No       | Frame rate denominator. Cannot be 0                                                                                                                | 1001                 |
+| pixel\_format->color\_model        | string          | Yes      | Frame color model                                                                                                                                  | "RGBA"               |
+| pixel\_format->components\_order   | string          | Yes      | Component order for the color model.                                                                                                               | "GBRA"               |
+| pixel\_format->chroma\_subsampling | string          | Yes      | Chroma subsampling                                                                                                                                 | "4:2:2"              |
+| pixel\_format->bit\_depth          | uint            | Yes      | Bit depth                                                                                                                                          | 8                    |
+| pixel\_format->has\_alpha          | bool            | Yes      | Is alpha channel exists                                                                                                                            | false                |
+| start\_time                        | float           | Yes      | Start time aka delay. Rounded to 3 decimal points.                                                                                                 | 0.033                |
+| duration                           | float           | Yes      | Video duration. Rounded to 3 decimal points.                                                                                                       | 12.079               |
+| frames\_count                      | uint            | Yes      | Video frames count                                                                                                                                 | 362                  |
+| bitrate->average                   | uint            | No       | Average bitrate. Typically - Steam size / duration                                                                                                 | 301878               |
+| bitrate->nominal                   | uint            | Yes      | Nominal bitrate. Aka target bitrate.                                                                                                               | 300000               |
+| bitrate->minimum                   | uint            | Yes      | Minimal stream bitrate                                                                                                                             | 298646               |
+| bitrate->maximum                   | uint            | Yes      | Maximum (peak) stream bitrate                                                                                                                      | 305943               |
+| color->primaries                   | string          | Yes      | Chromaticity coordinates of the source primaries                                                                                                   | "bt709"              |
+| color->transfer                    | string          | Yes      | Opto-electronic transfer characteristic of the source picture                                                                                      | "bt2020-12"          |
+| color->matrix                      | string          | Yes      | Matrix coefficients used in deriving luma and chroma signals from the green, blue, and red primaries                                               | "ycgco"              |
+| color->range                       | string          | Yes      | Color range (for YUV color space)                                                                                                                  | "tv"                 |
+
+## Parameter Categories
+
+### Codec Information
+
+Essential codec identification and format details:
+
+<AccordionGroup>
+  <Accordion icon="code" title="codec">
+    **`codec->id`** - Unique numeric identifier for the codec  
+    **`codec->four_cc`** - Four-character code (e.g., "H264", "mp4v")  
+    **`codec->name`** - Human-readable codec name (e.g., "h264", "mpeg4")
+  </Accordion>
+</AccordionGroup>
+
+### Video Dimensions
+
+Frame size and aspect ratio information:
+
+<AccordionGroup>
+  <Accordion icon="expand" title="size">
+    **`size->width`** - Video frame width in pixels  
+    **`size->height`** - Video frame height in pixels  
+    **`size->display_aspect_ratio`** - Display aspect ratio (e.g., 1.778 for 16:9)  
+    **`size->sample_aspect_ratio`** - Sample aspect ratio for non-square pixels
+  </Accordion>
+</AccordionGroup>
+
+### Temporal Information
+
+Frame rate and timing details:
+
+<AccordionGroup>
+  <Accordion icon="clock" title="frame_rate & timing">
+    **`frame_rate->numerator`** - Frame rate numerator (e.g., 30000)  
+    **`frame_rate->denominator`** - Frame rate denominator (e.g., 1001)  
+    **`start_time`** - Stream start time/delay in seconds  
+    **`duration`** - Total video duration in seconds  
+    **`frames_count`** - Total number of frames
+  </Accordion>
+</AccordionGroup>
+
+### Pixel Format
+
+Color and pixel structure information:
+
+<AccordionGroup>
+  <Accordion icon="palette" title="pixel_format">
+    **`pixel_format->color_model`** - Color model (e.g., "YUV", "RGB")  
+    **`pixel_format->components_order`** - Component order (e.g., "YUV", "BGRA")  
+    **`pixel_format->chroma_subsampling`** - Subsampling pattern (e.g., "4:2:0")  
+    **`pixel_format->bit_depth`** - Bits per component (e.g., 8, 10, 12)  
+    **`pixel_format->has_alpha`** - Presence of alpha channel
+  </Accordion>
+</AccordionGroup>
+
+### Bitrate Analysis
+
+Comprehensive bitrate statistics:
+
+<AccordionGroup>
+  <Accordion icon="chart-line" title="bitrate">
+    **`bitrate->average`** - Average bitrate across the entire stream  
+    **`bitrate->nominal`** - Target/nominal bitrate from encoder  
+    **`bitrate->minimum`** - Lowest bitrate observed  
+    **`bitrate->maximum`** - Peak bitrate observed
+  </Accordion>
+</AccordionGroup>
+
+### Color Space
+
+Advanced color space and HDR information:
+
+<AccordionGroup>
+  <Accordion icon="eye-dropper" title="color">
+    **`color->primaries`** - Color primaries (e.g., "bt709", "bt2020")  
+    **`color->transfer`** - Transfer characteristics (e.g., "bt709", "smpte2084")  
+    **`color->matrix`** - Color matrix coefficients (e.g., "bt709", "bt2020nc")  
+    **`color->range`** - Color range ("tv" for limited, "pc" for full)
+  </Accordion>
+</AccordionGroup>
+
+## Example Response
+
+```json
+{
+  "probe_report": {
+    "success": true,
+    "response": {
+      "codec": {
+        "id": 1983148141,
+        "four_cc": "avc1",
+        "name": "h264"
+      },
+      "size": {
+        "width": 1920,
+        "height": 1080,
+        "display_aspect_ratio": 1.778,
+        "sample_aspect_ratio": 1.0
+      },
+      "frame_rate": {
+        "numerator": 30000,
+        "denominator": 1001
+      },
+      "pixel_format": {
+        "color_model": "YUV",
+        "components_order": "YUV",
+        "chroma_subsampling": "4:2:0",
+        "bit_depth": 8,
+        "has_alpha": false
+      },
+      "start_time": 0.0,
+      "duration": 120.45,
+      "frames_count": 3614,
+      "bitrate": {
+        "average": 5000000,
+        "nominal": 5000000,
+        "minimum": 4800000,
+        "maximum": 5200000
+      },
+      "color": {
+        "primaries": "bt709",
+        "transfer": "bt709",
+        "matrix": "bt709",
+        "range": "tv"
+      }
+    }
+  }
+}
+```
+
+## Data Types
+
+### Numeric Precision
+
+- **uint**: Unsigned integer (always ≥ 0)
+- **int**: Signed integer
+- **float**: Floating point, rounded to 3 decimal places where specified
+- **bool**: Boolean true/false value
+
+### String Values
+
+- **four_cc**: Exactly 4 characters (may contain nulls)
+- **codec names**: Standardized codec identifiers
+- **color values**: Standardized color space names
+
+## Common Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Format Validation" icon="check-circle">
+    Verify codec compatibility and format specifications
+    
+    ```javascript
+    if (probe.codec.name === 'h264' && 
+        probe.size.width <= 1920) {
+      // Compatible format
+    }
+    ```
+  </Card>
+  
+  <Card title="Quality Analysis" icon="chart-bar">
+    Analyze encoding quality and bitrate efficiency
+    
+    ```javascript
+    const efficiency = probe.bitrate.average / 
+                      (probe.size.width * probe.size.height);
+    ```
+  </Card>
+  
+  <Card title="Compatibility Check" icon="gear">
+    Check device/platform compatibility
+    
+    ```javascript
+    const isWebCompatible = 
+      probe.codec.name === 'h264' &&
+      probe.pixel_format.chroma_subsampling === '4:2:0';
+    ```
+  </Card>
+  
+  <Card title="Transcoding Decisions" icon="refresh">
+    Determine if transcoding is needed
+    
+    ```javascript
+    const needsTranscode = 
+      probe.codec.name !== 'h264' ||
+      probe.size.width > 1920 ||
+      probe.bitrate.average > 8000000;
+    ```
+  </Card>
+</CardGroup>
+
+## Machine Learning Enhancements
+
+The Probe Report applies ML-trained heuristics to:
+
+- **Correct inconsistencies** between FFprobe and MediaInfo outputs
+- **Validate suspicious values** using learned patterns
+- **Fill missing data** using statistical models
+- **Normalize formats** across different tool outputs
+- **Detect encoding artifacts** and quality issues
+
+<Note>
+These enhancements are based on analysis of over 1 billion media assets and continuously improved through ongoing training.
+</Note> 

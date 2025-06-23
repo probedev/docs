@@ -1,33 +1,180 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: 'API Reference'
+description: 'Complete API documentation for Probe.dev media analysis'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+## Welcome to Probe.dev API
 
-## Welcome
+The Probe.dev API provides comprehensive media analysis through multiple industry-standard tools including FFprobe, MediaInfo, and our proprietary ML-enhanced Probe Report.
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
-
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+<CardGroup cols={2}>
+  <Card
+    title="Interactive API Explorer"
+    icon="play"
+    href="#interactive-api"
+  >
+    Try API endpoints directly in your browser
+  </Card>
+  <Card
+    title="OpenAPI Specification"
+    icon="code"
+    href="/api-reference/openapi.json"
+  >
+    Download the complete OpenAPI 3.1 specification
+  </Card>
+</CardGroup>
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+All API endpoints require authentication using your API token. Choose your preferred method:
+
+### Header Authentication (Recommended)
+```bash
+curl -H "Authorization: Bearer YOUR_API_TOKEN" \
+  "https://api.probe.dev/v1/probe/file?url=https://example.com/video.mp4"
+```
+
+### Query Parameter Authentication
+```bash
+curl "https://api.probe.dev/v1/probe/file?token=YOUR_API_TOKEN&url=https://example.com/video.mp4"
+```
+
+<Note>
+Get your API token from the [Probe.dev Dashboard](https://www.probe.dev/dashboard) after signing up.
+</Note>
+
+## Base URL
+
+All API requests use the following base URL:
+
+```
+https://api.probe.dev
+```
+
+## Main Endpoints
+
+### Media Analysis
+- **`/v1/probe/file`** - Analyze media files with FFprobe, MediaInfo, and Probe Report
+- **`/v1/probe/mediastreamvalidator`** - Validate HLS streams with Apple's MediaStreamValidator
+
+### Management
+- **`/frontend/api/v1/media/log`** - Access request logs and history
+- **`/frontend/api/v1/statistics/*`** - Usage statistics and analytics
+- **`/frontend/api/v1/user/*`** - User management and profiles
+
+## Quick Start Example
+
+Analyze a media file with all available tools:
+
+```bash
+curl -X POST https://api.probe.dev/v1/probe/file \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://probelibrary.s3.amazonaws.com/sample-source.mp4",
+    "inject_json": true,
+    "ffprobe": {
+      "enabled": true,
+      "show_streams": true,
+      "show_format": true
+    },
+    "mediainfo": {
+      "enabled": true,
+      "output": "JSON"
+    },
+    "probe_report": {
+      "enabled": true,
+      "diff": true
+    }
+  }'
+```
+
+## Response Format
+
+All responses follow a consistent JSON structure:
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
+{
+  "success": true,
+  "metadata": {
+    "request_id": "uuid",
+    "queue_time": 1500,
+    "io_usage": 2048000
+  },
+  "ffprobe": {
+    "success": true,
+    "duration": 2500,
+    "response": { /* FFprobe output */ }
+  },
+  "mediainfo": {
+    "success": true,
+    "duration": 1800,
+    "response": { /* MediaInfo output */ }
+  },
+  "probe_report": {
+    "success": true,
+    "duration": 3200,
+    "response": { /* Probe Report output */ }
   }
-]
+}
 ```
+
+## Rate Limits
+
+- **Request Rate**: 100 requests per minute per API token
+- **Concurrent**: 10 simultaneous requests per token
+- **Queue Time**: Maximum 60 seconds in queue before timeout
+- **File Size**: Maximum 10GB per file
+
+## Error Handling
+
+The API uses standard HTTP status codes:
+
+| **Code** | **Description** | **Common Causes** |
+|----------|-----------------|-------------------|
+| `200` | Success | Request completed successfully |
+| `400` | Bad Request | Invalid parameters or malformed request |
+| `401` | Unauthorized | Missing or invalid API token |
+| `403` | Forbidden | Insufficient permissions or quota exceeded |
+| `404` | Not Found | File not accessible or doesn't exist |
+| `429` | Too Many Requests | Rate limit exceeded |
+| `500` | Internal Server Error | Temporary server issue |
+
+## Support Resources
+
+<CardGroup cols={2}>
+  <Card
+    title="Sample Media Library"
+    icon="video"
+    href="/reference/sample-media-library"
+  >
+    Test files for trying the API
+  </Card>
+  <Card
+    title="Migration Guide"
+    icon="arrows-turn-right"
+    href="/guides/migration-guide"
+  >
+    Migrate from local FFprobe/MediaInfo
+  </Card>
+  <Card
+    title="Report Types Guide"
+    icon="chart-bar"
+    href="/guides/report-types"
+  >
+    Understand different analysis tools
+  </Card>
+  <Card
+    title="Dashboard"
+    icon="gauge"
+    href="https://www.probe.dev/dashboard"
+  >
+    Monitor usage and manage API tokens
+  </Card>
+</CardGroup>
+
+## Interactive API Documentation
+
+<Note>
+The interactive API explorer below is automatically generated from our OpenAPI 3.1 specification and provides a complete, testable interface to all endpoints.
+</Note>

@@ -1,0 +1,242 @@
+---
+title: 'Media Sources'
+description: 'Learn how to provide media assets from various sources'
+---
+
+## Overview
+
+Probe.dev can analyze media files from various sources. Simply provide a direct link to your media file, and our API will securely fetch and analyze it.
+
+## Public URLs
+
+The simplest approach is to provide a direct HTTP/HTTPS URL to your media file:
+
+```json
+{
+    "url": "https://example.com/videos/sample.mp4"
+}
+```
+
+**Requirements:**
+- Must be publicly accessible
+- Must be a direct link to the media file (not a webpage)
+- Supports HTTP and HTTPS protocols
+
+## Amazon S3 Integration
+
+### Public S3 Buckets
+
+For publicly accessible S3 objects, use the standard S3 URL format:
+
+```json
+{
+    "url": "https://my-bucket.s3.amazonaws.com/path/to/video.mp4"
+}
+```
+
+### Key-Based Authorization
+
+For private S3 objects, include your AWS access credentials directly in the URL:
+
+```http
+https://KEY:SECRET@s3.amazonaws.com/BUCKET/PATH
+s3://KEY:SECRET@BUCKET/PATH
+```
+
+**Example:**
+```json
+{
+    "url": "https://AKIAIOSFODNN7EXAMPLE:wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY@s3.amazonaws.com/my-bucket/video.mp4"
+}
+```
+
+<Warning>
+Be careful when using access keys in URLs as they may appear in logs. Consider using presigned URLs for better security.
+</Warning>
+
+### Presigned URLs
+
+For private S3 objects, create a presigned URL with temporary access:
+
+```json
+{
+    "url": "https://my-bucket.s3.amazonaws.com/sample-video.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20250506%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250506T121314Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=9a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1"
+}
+```
+
+**Benefits:**
+- Temporary access (configurable expiration)
+- No credentials in the URL path
+- More secure than embedded keys
+
+### Creating Presigned URLs
+
+<AccordionGroup>
+  <Accordion icon="aws" title="AWS CLI">
+    Generate a presigned URL using the AWS CLI:
+    
+    ```bash
+    aws s3 presign s3://my-bucket/video.mp4 --expires-in 3600
+    ```
+  </Accordion>
+  
+  <Accordion icon="code" title="AWS SDK (Node.js)">
+    Use the AWS SDK to generate presigned URLs programmatically:
+    
+    ```javascript
+    const AWS = require('aws-sdk');
+    const s3 = new AWS.S3();
+    
+    const params = {
+        Bucket: 'my-bucket',
+        Key: 'video.mp4',
+        Expires: 3600 // 1 hour
+    };
+    
+    const url = s3.getSignedUrl('getObject', params);
+    ```
+  </Accordion>
+  
+  <Accordion icon="python" title="AWS SDK (Python)">
+    Generate presigned URLs with boto3:
+    
+    ```python
+    import boto3
+    from botocore.exceptions import ClientError
+    
+    s3_client = boto3.client('s3')
+    
+    try:
+        response = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': 'my-bucket', 'Key': 'video.mp4'},
+            ExpiresIn=3600
+        )
+    except ClientError as e:
+        logging.error(e)
+        return None
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Other Cloud Storage
+
+### Google Cloud Storage
+
+```json
+{
+    "url": "https://storage.googleapis.com/my-bucket/video.mp4"
+}
+```
+
+### Azure Blob Storage
+
+```json
+{
+    "url": "https://mystorageaccount.blob.core.windows.net/my-container/video.mp4"
+}
+```
+
+### Cloudflare R2
+
+```json
+{
+    "url": "https://my-bucket.r2.cloudflarestorage.com/video.mp4"
+}
+```
+
+## CDN and Streaming Services
+
+Probe.dev works with media served through CDNs and streaming platforms:
+
+### Content Delivery Networks
+- **CloudFront** - Amazon's CDN
+- **CloudFlare** - Global CDN
+- **Fastly** - Edge cloud platform
+- **KeyCDN** - High performance CDN
+
+### Streaming Platforms
+- **Vimeo** - Direct links to video files
+- **YouTube** - Public video URLs
+- **Twitch** - VOD direct links
+
+<Note>
+Some platforms require specific URL formats or may have rate limiting. Ensure you're using direct media file URLs, not embed links.
+</Note>
+
+## URL Validation Tips
+
+### Valid URL Examples ✅
+```
+https://example.com/video.mp4
+https://cdn.example.com/media/stream.mkv
+https://bucket.s3.amazonaws.com/folder/file.avi
+ftp://server.com/media/video.mov
+```
+
+### Invalid URL Examples ❌
+```
+https://youtube.com/watch?v=abc123        // Embed page, not direct file
+https://example.com/player.html           // HTML player page
+https://drive.google.com/file/d/abc       // Google Drive share link
+file:///local/path/video.mp4              // Local file path
+```
+
+## Security Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Access Control" icon="shield-check">
+    - Use presigned URLs for private content
+    - Set appropriate expiration times
+    - Limit access to specific IP ranges when possible
+    - Monitor access logs for unusual activity
+  </Card>
+  
+  <Card title="URL Management" icon="link">
+    - Don't embed credentials in URLs when possible
+    - Use HTTPS for all media URLs
+    - Validate URLs before sending to API
+    - Consider URL shortening for very long presigned URLs
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+### Common Issues
+
+| **Error** | **Cause** | **Solution** |
+|-----------|-----------|--------------|
+| `403 Forbidden` | Private content, credentials missing | Use presigned URL or add credentials |
+| `404 Not Found` | Incorrect URL or file doesn't exist | Verify URL and file existence |
+| `Timeout` | Large file or slow connection | Check file size and network connectivity |
+| `Invalid URL` | Malformed URL | Validate URL format |
+
+### Testing Media Sources
+
+Verify your media URL is accessible:
+
+```bash
+# Test with curl
+curl -I "https://your-media-url.com/video.mp4"
+
+# Should return HTTP 200 and Content-Type: video/*
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Report Types"
+    icon="chart-bar"
+    href="/guides/report-types"
+  >
+    Choose the right analysis tools for your media
+  </Card>
+  <Card
+    title="Sample Library"
+    icon="video"
+    href="/reference/sample-media-library"
+  >
+    Try our sample files for testing
+  </Card>
+</CardGroup> 

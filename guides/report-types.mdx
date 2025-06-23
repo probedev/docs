@@ -1,0 +1,161 @@
+---
+title: 'Report Types'
+description: 'Understanding FFprobe, MediaInfo, and Probe Report analysis tools'
+---
+
+## Overview
+
+Probe.dev supports multiple analysis tools, each optimizing for different use cases. You can enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
+
+```json
+{
+    "url": "https://probelibrary.s3.amazonaws.com/sample-source.mp4",
+    "inject_json": true,  
+    "probe_report": {
+        "enabled": true,
+        "diff": true
+    },
+    "mediainfo": {
+        "enabled": true
+    },
+    "ffprobe": {
+        "enabled": true
+    }
+}
+```
+
+## Quick Selection
+
+| **Parameter** | **Type** | **Allowed values**                     | **Purpose**                                                                                                               |
+| ------------- | -------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `only`        | string   | `mediainfo`, `ffprobe`, `probe_report` | Run exactly one tool and return its raw output with no wrappers                                                          |
+| `inject_json` | boolean  | `true`, `false`                        | Inject the canonicalized metadata back into the original raw JSON payload so downstream tools can consume a single object |
+
+## <span className="tool-mediainfo px-2 py-1 rounded text-sm font-medium mr-2">MediaInfo</span>
+
+[MediaInfo](https://mediaarea.net/en/MediaInfo) summarizes the most relevant technical and tag information. Ideal for content validation and format verification.
+
+```json
+{
+    "mediainfo": {
+        "enabled": true,
+        "version": "latest",
+        "output": "JSON"
+    }
+}
+```
+
+### Parameters
+
+| **Parameter** | **Description**                                   | **Allowed Values**                                                                                                                                                                                                                                   | **Default** |
+| ------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `enabled`     | Toggle MediaInfo analysis                         | `true`, `false`                                                                                                                                                                                                                                      | `false`     |
+| `version`     | Specifies the version of mediainfo which will run | `latest`, `24.06`, `23.11`, `22.12`, `21.09`, `20.09`, `19.09`, `18.12`                                                                                                                                                                              | `latest`    |
+| `output`      | Output format returned                            | `HTML`, `XML`, `JSON`, `EBUCore_1.8_ps`, `EBUCore_1.8_sp`, `EBUCore_1.8_ps_JSON`, `EBUCore_1.8_sp_JSON`, `EBUCore_1.6`, `FIMS_1.3`, `MPEG-7_Strict`, `MPEG-7_Relaxed`, `MPEG-7_Extended`, `PBCore_2.1`, `PBCore_2.0`, `PBCore_1.2`, or `NISO_Z39.87` | `JSON`      |
+
+<Note>
+You may pass any MediaInfo CLI flag in snake_case; names match the original tool.
+</Note>
+
+## <span className="tool-ffprobe px-2 py-1 rounded text-sm font-medium mr-2">FFprobe</span>
+
+[FFprobe](https://ffmpeg.org/ffprobe.html) offers deeper introspection than MediaInfo and integrates seamlessly with FFmpeg pipelines. Perfect for detailed technical analysis.
+
+```json
+{
+    "ffprobe": {
+        "enabled": true,
+        "version": "latest",
+        "output_format": "json"
+    }
+}
+```
+
+### Parameters
+
+| **Parameter**   | **Description**         | **Allowed Values**                                                                       | **Default** |
+| --------------- | ----------------------- | ---------------------------------------------------------------------------------------- | ----------- |
+| `enabled`       | Toggle ffprobe analysis | `true`, `false`                                                                          | `false`     |
+| `version`       | ffprobe build to run    | `latest`, `7.0`, `6.0`, `5.1`, `5.0`, `4.4`, `4.3`, `4.2`, `4.1`, `4.0`, `3.4`, or `3.3` | `latest`    |
+| `output_format` | Output serialization    | `default`, `csv`, `flat`, `ini`, `json`, or `xml`                                        | `json`      |
+
+<Tip>
+We accept virtually all ffprobe options with the same names. Refer to the [ffprobe documentation](https://ffmpeg.org/ffprobe.html#Options) for details.
+</Tip>
+
+## <span className="tool-probe-report px-2 py-1 rounded text-sm font-medium mr-2">Probe Report</span>
+
+The `probe_report` parses, reconciles and canonicalizes the raw outputs from FFprobe and MediaInfo, then applies machine‑learning heuristics (trained on >1 billion assets) to correct inconsistencies and deliver a single, authoritative metadata set.
+
+```json
+{
+    "probe_report": {
+        "enabled": true,
+        "diff": true
+    }
+}
+```
+
+### Parameters
+
+| **Parameter** | **Description**                                               | **Allowed values** | **Default** |
+| ------------- | ------------------------------------------------------------- | ------------------ | ----------- |
+| `enabled`     | Toggle Probe Report generation                                | `true`, `false`    | `false`     |
+| `diff`        | Include structural diff between MediaInfo and FFprobe outputs | `true`, `false`    | `false`     |
+
+## <span className="tool-mediastreamvalidator px-2 py-1 rounded text-sm font-medium mr-2">MediaStreamValidator</span>
+
+[Apple's MediaStreamValidator](https://developer.apple.com/streaming/tools/) checks the compliance of HTTP Live Streaming (HLS) media streams against Apple's technical specifications.
+
+<Warning>
+`mediastreamvalidator` is slower than other tools and typically takes **12–15 seconds** to complete. Use selectively during staging or pre-publish validation workflows.
+</Warning>
+
+```json
+{
+  "mediastreamvalidator": {
+    "enabled": true,
+    "timeout": 30,
+    "queue_timeout": 10,
+    "parse_playlist_only": true,
+    "enable_cli_output": false
+  },
+  "inject_json": true,
+  "url": "https://example.com/path/to/playlist.m3u8"
+}
+```
+
+### Parameters
+
+| **Parameter**         | **Description**                                                              | **Allowed Values** | **Default** |
+| --------------------- | ---------------------------------------------------------------------------- | ------------------ | ----------- |
+| `enabled`             | Toggle MediaStreamValidator analysis                                         | `true`, `false`    | `false`     |
+| `timeout`             | Maximum execution time for the tool (in seconds)                             | Integer            | `30`        |
+| `queue_timeout`       | Maximum time the job may remain in queue before timing out (in seconds)      | Integer            | `10`        |
+| `parse_playlist_only` | Validate the playlist structure without fully downloading or decoding chunks | `true`, `false`    | `true`      |
+| `enable_cli_output`   | Include the raw CLI output of `mediastreamvalidator` in the response         | `true`, `false`    | `false`     |
+
+## Choosing the Right Tool
+
+<CardGroup cols={3}>
+  <Card title="MediaInfo" icon="info">
+    **Best for:** Content validation, format verification, quick metadata overview
+    
+    **Speed:** Fast
+    **Detail Level:** Medium
+  </Card>
+  
+  <Card title="FFprobe" icon="search">
+    **Best for:** Technical analysis, FFmpeg integration, detailed stream information
+    
+    **Speed:** Fast
+    **Detail Level:** High
+  </Card>
+  
+  <Card title="Probe Report" icon="brain">
+    **Best for:** Authoritative metadata, ML-enhanced analysis, reconciled data
+    
+    **Speed:** Medium
+    **Detail Level:** Highest
+  </Card>
+</CardGroup> 

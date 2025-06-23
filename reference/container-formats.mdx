@@ -1,0 +1,231 @@
+---
+title: 'Container Formats'
+description: 'Complete reference of supported container formats'
+---
+
+## Supported Container Formats
+
+Container formats (also called wrappers or muxers) define how audio, video, subtitle, and metadata streams are stored together in a single file. Probe.dev supports analysis of all major container formats.
+
+| Format      | Description                                             |
+| ----------- | ------------------------------------------------------- |
+| ac3         | Raw Dolby  AC-3                                         |
+| act         | Actions Semiconductor Audio                             |
+| adts        | Raw ADTS AAC                                            |
+| aiff        | Audio Interchange File Format                           |
+| amr         | 3GPP Adaptive Multi-Rate                                |
+| ape         | Monkey's Audio                                          |
+| asf         | Advanced / Active Streaming Format                      |
+| au          | Sun AU                                                  |
+| avi         | Audio Video Interleaved                                 |
+| caf         | Apple Core Audio Format                                 |
+| cavs        | Raw Chinese AVS                                         |
+| cctv\_dat   | CCTV DAT Video                                          |
+| cctv\_ivf   | IFV CCTV DVR                                            |
+| dds         | DirectDraw Surface                                      |
+| dhav        | Video DAV                                               |
+| dirac       | Raw SMPTE VC-2 / Dirac                                  |
+| dnxhd       | Raw SMPTE VC-3 / DNxHD                                  |
+| dpx         | Digital Picture Exchange                                |
+| dsf         | DSD Stream File                                         |
+| dts         | Digital Theater Systems                                 |
+| dv          | Raw Digital Video                                       |
+| ea          | Electronic Arts Multimedia                              |
+| eac3        | Raw Dolby  E-AC-3                                       |
+| flac        | FLAC                                                    |
+| flic        | FLI/FLC/FLX animation                                   |
+| flv         | Flash Video                                             |
+| gxf         | General eXchange Format                                 |
+| h263        | Raw H.263                                               |
+| h264        | Raw H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10           |
+| hevc        | Raw HEVC                                                |
+| iv8         | IndigoVision 8000 video                                 |
+| ivf         | On2 IVF                                                 |
+| jpeg2000    | Raw JPEG 2000                                           |
+| lvf         | Liberty Variance Format                                 |
+| lxf         | VR native stream                                        |
+| matroska    | Matroska / WebM                                         |
+| mlp         | Raw Meridian Lossless Packing                           |
+| mp3         | MPEG audio layer 3                                      |
+| mpeg        | Raw MPEG Video                                          |
+| mpeg4       | QuickTime / MOV / MPEG-4 Part 14                        |
+| mpeg4video  | Raw MPEG-4 part 2 / MPEG-4 Visual                       |
+| mpegps      | MPEG Program Stream                                     |
+| mpegts      | MPEG-2 Transport Stream                                 |
+| musepack7   | Musepack SV8                                            |
+| musepack8   | Musepack SV7                                            |
+| mxf         | Material Exchange Format                                |
+| nsv         | Nullsoft Streaming Video                                |
+| nuppelvideo | MythTV NuppelVideo                                      |
+| ogg         | Ogg                                                     |
+| openmg      | Sony OpenMG audio                                       |
+| pmp         | Playstation Portable PMP                                |
+| png         | Portable Network Graphics                               |
+| pva         | TechnoTrend PVA                                         |
+| qcp         | QCP                                                     |
+| realmedia   | RealMedia                                               |
+| rk\_audio   | RK Audio                                                |
+| sami        | SAMI subtitle format                                    |
+| scc         | Scenarist Closed Captions                               |
+| shockwave   | ShockWave Flash                                         |
+| shorten     | Raw Shorten                                             |
+| srt         | SubRip subtitle format                                  |
+| tak         | Raw Tom's lossless Audio Kompressor                     |
+| truehd      | Raw Dolby TrueHD                                        |
+| tta         | True Audio                                              |
+| twinvq      | Nippon Telegraph and Telephone Corporation (NTT) TwinVQ |
+| ty          | TiVo Ty                                                 |
+| usm         | Criware USM                                             |
+| vc1         | Raw VC-1                                                |
+| wav         | Waveform Audio                                          |
+| wave64      | Sony Wave64                                             |
+| wavpack     | Raw WavPack                                             |
+| yuv4mpeg2   | YUV4MPEG2                                               |
+
+## Container Categories
+
+<CardGroup cols={2}>
+  <Card title="Modern Web/Streaming" icon="globe">
+    **MP4 (MPEG-4)** - Universal container for web and mobile  
+    **WebM (Matroska)** - Open format optimized for web  
+    **HLS (MPEG-TS)** - HTTP Live Streaming segments  
+    **DASH** - Dynamic Adaptive Streaming  
+  </Card>
+  
+  <Card title="Professional" icon="briefcase">
+    **MXF** - Material Exchange Format for broadcast  
+    **GXF** - General eXchange Format  
+    **DNxHD** - Avid's high-quality format  
+    **ProRes** - Apple's professional codec container  
+  </Card>
+  
+  <Card title="Legacy/Broadcast" icon="broadcast-tower">
+    **AVI** - Audio Video Interleaved (Windows legacy)  
+    **MOV** - QuickTime Movie (Apple legacy)  
+    **MPEG-PS** - Program Stream for DVD/broadcast  
+    **ASF/WMV** - Windows Media formats  
+  </Card>
+  
+  <Card title="Audio-Only" icon="music">
+    **FLAC** - Free Lossless Audio Codec  
+    **MP3** - MPEG audio layer 3  
+    **WAV** - Waveform Audio  
+    **OGG** - Open container for Vorbis  
+  </Card>
+</CardGroup>
+
+## Common Use Cases
+
+### Web & Mobile Distribution
+- **MP4** - Best compatibility across devices and browsers
+- **WebM** - Optimized for modern web browsers
+- **HLS (.m3u8/.ts)** - Adaptive streaming for live/VOD
+
+### Professional Production
+- **MXF** - Broadcast and professional video production
+- **MOV** - High-quality production (especially Apple ecosystems)
+- **AVI** - Legacy production workflows
+
+### Archival & Storage
+- **Matroska (.mkv)** - Open format with extensive codec support
+- **MP4** - Long-term compatibility and wide support
+- **MXF** - Professional archival standard
+
+## Format Selection Guide
+
+### For Web Streaming
+```
+MP4 (H.264 + AAC) - Universal compatibility
+WebM (VP9 + Opus) - Modern browsers, smaller files
+HLS (MPEG-TS) - Live streaming and adaptive delivery
+```
+
+### For Professional Workflows
+```
+MXF - Broadcast and enterprise
+MOV (ProRes) - High-quality production
+DNxHD - Avid/professional editing
+```
+
+### For Long-term Storage
+```
+MP4 - Best long-term compatibility
+MKV - Open format, extensive codec support
+AVI - Legacy compatibility (not recommended for new content)
+```
+
+## Technical Characteristics
+
+### Streaming Support
+| **Format** | **Live Streaming** | **Adaptive** | **Subtitles** | **Chapters** |
+|------------|-------------------|---------------|---------------|--------------|
+| **MP4** | Limited | No | Yes | Yes |
+| **HLS (TS)** | Excellent | Yes | Yes | Limited |
+| **WebM** | Good | Limited | Yes | Yes |
+| **Matroska** | Limited | No | Excellent | Excellent |
+
+### Codec Compatibility
+| **Format** | **Video Codecs** | **Audio Codecs** | **Max Streams** |
+|------------|------------------|------------------|-----------------|
+| **MP4** | H.264, H.265, AV1 | AAC, MP3, AC3 | Unlimited |
+| **WebM** | VP8, VP9, AV1 | Vorbis, Opus | Multiple |
+| **AVI** | Most codecs | Most codecs | 2 (1 video, 1 audio) |
+| **MKV** | All codecs | All codecs | Unlimited |
+
+## Container Analysis Examples
+
+### Basic Container Detection
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "only=mediainfo" \
+  --data-urlencode "url=https://example.com/video.mp4"
+```
+
+### Detailed Stream Analysis
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "only=ffprobe" \
+  --data-urlencode "url=https://example.com/video.mkv" \
+  --data-urlencode "ffprobe[show_format]=true" \
+  --data-urlencode "ffprobe[show_streams]=true"
+```
+
+## Best Practices
+
+### Container Selection
+1. **Choose based on distribution method** - Web, broadcast, or production
+2. **Consider codec compatibility** - Not all containers support all codecs  
+3. **Think about future needs** - Expandability and format longevity
+4. **Account for target devices** - Player/device compatibility
+
+### Quality Considerations
+- **Overhead** - Some containers add more metadata overhead
+- **Seek performance** - Index structure affects scrubbing/seeking
+- **Streaming efficiency** - Fragmentation and structure impact streaming
+- **Error resilience** - Some formats handle corruption better
+
+## Troubleshooting
+
+### Common Container Issues
+
+| **Issue** | **Cause** | **Solution** |
+|-----------|-----------|--------------|
+| Playback fails | Unsupported container | Check device/player compatibility |
+| Poor seeking | Missing index | Re-mux with proper indexing |
+| Large file size | Inefficient container | Choose more efficient format |
+| Streaming problems | Non-streaming container | Use streaming-optimized format |
+
+### Container Validation
+```bash
+# Check if container is streaming-optimized
+ffprobe -show_format video.mp4 | grep "start_time\|duration"
+
+# Verify container integrity
+ffprobe -v error -show_entries format=format_name video.mp4
+```
+
+<Note>
+Container format choice significantly impacts compatibility, streaming performance, and file size. Choose the appropriate format based on your specific use case and target platforms.
+</Note> 

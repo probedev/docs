@@ -1,0 +1,315 @@
+---
+title: 'Migration Guide'
+description: 'Migrate from local media analysis tools to the Probe.dev API'
+---
+
+## Overview
+
+Migrating from local FFprobe, MediaInfo, or other media analysis tools to Probe.dev is straightforward. Our API maintains compatibility with existing tool parameters while providing cloud-scale reliability and enhanced features.
+
+## Why Migrate?
+
+<CardGroup cols={2}>
+  <Card title="Scalability" icon="arrows-up-to-line">
+    **No Infrastructure Management**  
+    Process thousands of files without server provisioning
+    
+    **Auto-scaling**  
+    Handles traffic spikes automatically
+  </Card>
+  
+  <Card title="Reliability" icon="shield-check">
+    **99.9% Uptime**  
+    Redundant infrastructure across multiple regions
+    
+    **Error Handling**  
+    Robust retry mechanisms and failure recovery
+  </Card>
+  
+  <Card title="Enhanced Features" icon="sparkles">
+    **ML-Enhanced Analysis**  
+    Probe Report with trained heuristics
+    
+    **Multiple Tool Support**  
+    FFprobe, MediaInfo, and custom analysis in one call
+  </Card>
+  
+  <Card title="Cost Efficiency" icon="dollar-sign">
+    **Pay Per Use**  
+    No idle server costs
+    
+    **Reduced Maintenance**  
+    No software updates or security patches
+  </Card>
+</CardGroup>
+
+## Migration Examples
+
+### FFprobe Migration
+
+**Before (Local FFprobe):**
+```php
+// Local execution
+exec(
+    'ffprobe -i ' . escapeshellarg($url) .
+    " -print_format json -probesize $probesize" .
+    " -analyzeduration $analyzeduration -max_probe_packets $max_probe_packets" .
+    ' -show_format -show_streams',
+    $output
+);
+```
+
+**After (Probe.dev API):**
+```php
+// Equivalent call through the Probe API
+$token = getenv('PROBE_API_TOKEN');
+
+$query = http_build_query([
+    'token'                      => $token,
+    'url'                        => $url,
+    'only'                       => 'ffprobe',
+    'ffprobe[output_format]'     => 'json',
+    'ffprobe[probesize]'         => $probesize,
+    'ffprobe[analyzeduration]'   => $analyzeduration,
+    'ffprobe[max_probe_packets]' => $max_probe_packets,
+    'ffprobe[show_format]'       => 'true',
+    'ffprobe[show_streams]'      => 'true',
+]);
+
+$response = file_get_contents("https://api.probe.dev/v1/probe/file?$query");
+$output   = json_decode($response, true);
+```
+
+<Note>
+That's it—you've migrated the command to a secure HTTPS call while preserving every original ffprobe flag.
+</Note>
+
+### MediaInfo Migration
+
+**Before (Local MediaInfo):**
+```bash
+mediainfo --Output=JSON /path/to/video.mp4
+```
+
+**After (Probe.dev API):**
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "only=mediainfo" \
+  --data-urlencode "url=https://example.com/video.mp4"
+```
+
+### Python Migration
+
+**Before (Local subprocess):**
+```python
+import subprocess
+import json
+
+def analyze_media(file_path):
+    cmd = [
+        'ffprobe', '-v', 'quiet', '-print_format', 'json',
+        '-show_format', '-show_streams', file_path
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    return json.loads(result.stdout)
+```
+
+**After (Probe.dev API):**
+```python
+import requests
+import os
+
+def analyze_media(file_url):
+    params = {
+        'token': os.getenv('PROBE_API_TOKEN'),
+        'url': file_url,
+        'only': 'ffprobe',
+        'ffprobe[output_format]': 'json',
+        'ffprobe[show_format]': 'true',
+        'ffprobe[show_streams]': 'true'
+    }
+    
+    response = requests.get('https://api.probe.dev/v1/probe/file', params=params)
+    return response.json()
+```
+
+### Node.js Migration
+
+**Before (Local execution):**
+```javascript
+const { exec } = require('child_process');
+
+function analyzeMedia(filePath) {
+    return new Promise((resolve, reject) => {
+        exec(`ffprobe -v quiet -print_format json -show_format -show_streams "${filePath}"`, 
+             (error, stdout, stderr) => {
+            if (error) reject(error);
+            else resolve(JSON.parse(stdout));
+        });
+    });
+}
+```
+
+**After (Probe.dev API):**
+```javascript
+const axios = require('axios');
+
+async function analyzeMedia(fileUrl) {
+    const params = new URLSearchParams({
+        'token': process.env.PROBE_API_TOKEN,
+        'url': fileUrl,
+        'only': 'ffprobe',
+        'ffprobe[output_format]': 'json',
+        'ffprobe[show_format]': 'true',
+        'ffprobe[show_streams]': 'true'
+    });
+    
+    const response = await axios.get(`https://api.probe.dev/v1/probe/file?${params}`);
+    return response.data;
+}
+```
+
+## Parameter Mapping
+
+### FFprobe Parameters
+
+Most FFprobe parameters are supported with the same names in snake_case:
+
+| **Local FFprobe** | **Probe.dev API** | **Description** |
+|-------------------|-------------------|-----------------|
+| `-print_format json` | `ffprobe[output_format]=json` | Output format |
+| `-show_format` | `ffprobe[show_format]=true` | Show container info |
+| `-show_streams` | `ffprobe[show_streams]=true` | Show stream info |
+| `-probesize 1000000` | `ffprobe[probesize]=1000000` | Probe buffer size |
+| `-analyzeduration 5000000` | `ffprobe[analyzeduration]=5000000` | Analysis duration |
+
+### MediaInfo Parameters
+
+| **Local MediaInfo** | **Probe.dev API** | **Description** |
+|---------------------|-------------------|-----------------|
+| `--Output=JSON` | `mediainfo[output]=JSON` | Output format |
+| `--Full` | `mediainfo[full]=true` | Complete information |
+| `--Language=raw` | `mediainfo[language]=raw` | Language setting |
+
+## Migration Checklist
+
+<AccordionGroup>
+  <Accordion icon="list-check" title="Pre-Migration Assessment">
+    - [ ] Identify all current media analysis workflows
+    - [ ] Document existing FFprobe/MediaInfo parameters
+    - [ ] List file sources (local, S3, URLs, etc.)
+    - [ ] Estimate current processing volume
+    - [ ] Review output format requirements
+  </Accordion>
+  
+  <Accordion icon="code" title="Code Migration">
+    - [ ] Sign up for Probe.dev account
+    - [ ] Get API token from dashboard
+    - [ ] Update file paths to URLs
+    - [ ] Convert command parameters to API parameters
+    - [ ] Add error handling for HTTP requests
+    - [ ] Test with sample files
+  </Accordion>
+  
+  <Accordion icon="test-tube" title="Testing">
+    - [ ] Compare outputs between local and API
+    - [ ] Test with various file formats
+    - [ ] Validate error handling
+    - [ ] Performance testing with typical workloads
+    - [ ] Integration testing with downstream systems
+  </Accordion>
+  
+  <Accordion icon="rocket" title="Deployment">
+    - [ ] Update environment variables
+    - [ ] Deploy to staging environment
+    - [ ] Monitor API usage and performance
+    - [ ] Graduate to production
+    - [ ] Decommission local tools
+  </Accordion>
+</AccordionGroup>
+
+## Common Migration Patterns
+
+### Batch Processing
+
+**Before:**
+```bash
+for file in /media/*.mp4; do
+    ffprobe -v quiet -print_format json -show_format "$file" > "$(basename "$file").json"
+done
+```
+
+**After:**
+```bash
+for url in "${media_urls[@]}"; do
+    curl -G https://api.probe.dev/v1/probe/file \
+        --data-urlencode "token=${PROBE_API_TOKEN}" \
+        --data-urlencode "only=ffprobe" \
+        --data-urlencode "url=$url" \
+        > "$(basename "$url").json"
+done
+```
+
+### Webhook Integration
+
+Replace local processing with webhook callbacks:
+
+```python
+# Send analysis request
+response = requests.post('https://api.probe.dev/v1/probe/file', json={
+    'url': file_url,
+    'webhook_url': 'https://myapp.com/webhook',
+    'ffprobe': {'enabled': True},
+    'mediainfo': {'enabled': True}
+})
+
+# Handle results in webhook endpoint
+@app.route('/webhook', methods=['POST'])
+def handle_analysis_complete():
+    data = request.json
+    # Process analysis results
+    return 'OK'
+```
+
+## Performance Considerations
+
+### Optimization Tips
+
+1. **Use `only` parameter** for single-tool analysis
+2. **Enable `inject_json`** to combine multiple tool outputs
+3. **Batch similar requests** to reduce overhead
+4. **Cache results** for frequently analyzed files
+5. **Use webhooks** for long-running analysis
+
+### Expected Performance
+
+| **Analysis Type** | **Typical Response Time** | **Notes** |
+|-------------------|---------------------------|-----------|
+| FFprobe only | 2-5 seconds | Fast technical analysis |
+| MediaInfo only | 2-4 seconds | Quick format detection |
+| Probe Report | 5-10 seconds | ML-enhanced processing |
+| All tools | 8-15 seconds | Comprehensive analysis |
+
+## Support & Resources
+
+<CardGroup cols={2}>
+  <Card
+    title="API Reference"
+    icon="book"
+    href="/api-reference/introduction"
+  >
+    Complete API documentation
+  </Card>
+  <Card
+    title="Sample Library"
+    icon="video"
+    href="/reference/sample-media-library"
+  >
+    Test files for validation
+  </Card>
+</CardGroup>
+
+<Note>
+Need help with your migration? Contact our support team at support@probe.dev for personalized assistance.
+</Note> 
