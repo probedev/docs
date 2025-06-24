@@ -13,14 +13,14 @@ export PROBE_API_TOKEN="your_api_key_here"
 ### 3. Configure Your Client
 
 <CodeGroup>
-```json Cursor
+```json Cursor (~/.cursor/mcp.json)
 {
   "mcpServers": {
     "probe-dev": {
       "command": "npx",
       "args": ["mint-mcp", "run", "docs.probe.dev"],
       "env": {
-        "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
+        "PROBE_API_TOKEN": "your_actual_api_key_here"
       }
     }
   }

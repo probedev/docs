@@ -16,6 +16,10 @@ The Probe.dev MCP (Model Context Protocol) server enables AI assistants to direc
 You'll need a Probe.dev API key to use the MCP server. Get yours at [probe.dev/dashboard](https://www.probe.dev/dashboard).
 </Note>
 
+<Info>
+After running the initial setup with `npx mint-mcp add docs.probe.dev`, you'll use `npx -y mint-mcp docs.probe.dev` in all your MCP client configurations.
+</Info>
+
 ## Supported Clients
 
 The Probe.dev MCP server works with any MCP-compatible client:
@@ -39,13 +43,19 @@ The Probe.dev MCP server works with any MCP-compatible client:
 
 ### Step 1: Install the MCP Server
 
-Run this command to install the Probe.dev MCP server:
+Run this command to set up the Probe.dev MCP server:
 
 ```bash
 npx mint-mcp add docs.probe.dev
 ```
 
-When prompted, follow the authentication steps and select your preferred MCP clients.
+When prompted:
+1. Provide your **External Admin Key** and **Assistant API Key** from your [Mintlify dashboard](https://dashboard.mintlify.com/settings/organization/api-keys)
+2. Select which MCP clients you want to enable
+
+<Note>
+After setup, you'll use the command `npx -y mint-mcp docs.probe.dev` to run your MCP server locally in client configurations.
+</Note>
 
 ### Step 2: Configure Your API Key
 
@@ -84,19 +94,24 @@ Never commit your API key to version control. Always use environment variables o
 
 ### Cursor Setup
 
-1. **Open Cursor Settings**
-   - Press `Cmd/Ctrl + ,` to open settings
-   - Navigate to "Extensions" → "MCP"
+1. **Create MCP Configuration File**
+   Create or edit the file `~/.cursor/mcp.json`:
+   
+   ```bash
+   mkdir -p ~/.cursor
+   touch ~/.cursor/mcp.json
+   ```
 
-2. **Add Probe.dev Server**
+2. **Add Probe.dev Server Configuration**
+   Edit `~/.cursor/mcp.json` with the following content:
    ```json
    {
      "mcpServers": {
        "probe-dev": {
          "command": "npx",
-         "args": ["mint-mcp", "run", "docs.probe.dev"],
+         "args": ["-y", "mint-mcp", "docs.probe.dev"],
          "env": {
-           "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
+           "PROBE_API_TOKEN": "your_actual_api_key_here"
          }
        }
      }
@@ -105,6 +120,10 @@ Never commit your API key to version control. Always use environment variables o
 
 3. **Restart Cursor** to activate the MCP server
 
+<Note>
+Replace `your_actual_api_key_here` with your actual API key from [probe.dev/dashboard](https://www.probe.dev/dashboard). The `-y` flag automatically accepts prompts during server startup.
+</Note>
+
 ### Claude Desktop Setup
 
 1. **Locate Configuration File**
@@ -112,12 +131,13 @@ Never commit your API key to version control. Always use environment variables o
    - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 2. **Edit Configuration**
+   Add the Probe.dev MCP server configuration:
    ```json
    {
      "mcpServers": {
        "probe-dev": {
          "command": "npx",
-         "args": ["mint-mcp", "run", "docs.probe.dev"],
+         "args": ["-y", "mint-mcp", "docs.probe.dev"],
          "env": {
            "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
          }
@@ -139,7 +159,7 @@ Never commit your API key to version control. Always use environment variables o
        {
          "name": "probe-dev",
          "command": "npx",
-         "args": ["mint-mcp", "run", "docs.probe.dev"],
+         "args": ["-y", "mint-mcp", "docs.probe.dev"],
          "env": {
            "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
          }
@@ -215,6 +235,16 @@ Ask your AI assistant:
 ## Troubleshooting
 
 <AccordionGroup>
+  <Accordion icon="terminal" title="Configuration Issues">
+    **Symptoms**: MCP server not connecting, "0 tools enabled" in client
+    
+    **Solutions**:
+    - Ensure you're using the correct command: `npx -y mint-mcp docs.probe.dev`
+    - The `-y` flag is important to auto-accept prompts during startup
+    - Verify your `mcp.json` file syntax is valid JSON
+    - Check that you've completed the initial setup: `npx mint-mcp add docs.probe.dev`
+  </Accordion>
+  
   <Accordion icon="exclamation-triangle" title="API Key Issues">
     **Symptoms**: Authentication errors, "401 Unauthorized" responses
     
@@ -315,7 +345,7 @@ You can create custom aliases for frequently used operations:
   "mcpServers": {
     "probe-dev": {
       "command": "npx",
-      "args": ["mint-mcp", "run", "docs.probe.dev"],
+      "args": ["-y", "mint-mcp", "docs.probe.dev"],
       "env": {
         "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
       },
@@ -337,7 +367,7 @@ Configure request throttling to stay within API limits:
   "mcpServers": {
     "probe-dev": {
       "command": "npx",
-      "args": ["mint-mcp", "run", "docs.probe.dev"],
+      "args": ["-y", "mint-mcp", "docs.probe.dev"],
       "env": {
         "PROBE_API_TOKEN": "${PROBE_API_TOKEN}",
         "PROBE_RATE_LIMIT": "100"
