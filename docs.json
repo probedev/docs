@@ -56,51 +56,9 @@
         "tab": "API Reference",
         "groups": [
           {
-            "group": "Overview",
+            "group": "API Documentation",
             "pages": [
               "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Media Analysis",
-            "pages": [
-              "api-reference/request-file-report-as-url-query-method",
-              "api-reference/request-file-report-as-json-body-method",
-              "api-reference/request-mediastreamvalidator-report-as-url-query-method"
-            ]
-          },
-          {
-            "group": "Authentication",
-            "pages": [
-              "api-reference/authenticate-user-by-username-email--and-password",
-              "api-reference/verify-sign-up-email",
-              "api-reference/get-list-of-active-sessions",
-              "api-reference/delete-active-session",
-              "api-reference/delete-all-active-sessions"
-            ]
-          },
-          {
-            "group": "User Management",
-            "pages": [
-              "api-reference/get-current-user-profile",
-              "api-reference/update-user-profile",
-              "api-reference/update-current-user-password",
-              "api-reference/get-user-by-id",
-              "api-reference/update-sub-user-profile-by-id",
-              "api-reference/update-sub-user-password",
-              "api-reference/list-users"
-            ]
-          },
-          {
-            "group": "Statistics & Monitoring",
-            "pages": [
-              "api-reference/list-media-requests-log",
-              "api-reference/get-request-log-entry-by-id",
-              "api-reference/requests-statistics",
-              "api-reference/usage-statistics",
-              "api-reference/usage-summary",
-              "api-reference/queue-time-statistics",
-              "api-reference/sources-storage-type-statistics"
             ]
           }
         ]
