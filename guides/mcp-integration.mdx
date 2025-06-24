@@ -49,12 +49,16 @@ Run this command to set up the Probe.dev MCP server:
 npx mint-mcp add docs.probe.dev
 ```
 
-When prompted:
-1. Provide your **External Admin Key** and **Assistant API Key** from your [Mintlify dashboard](https://dashboard.mintlify.com/settings/organization/api-keys)
-2. Select which MCP clients you want to enable
+When prompted, you'll see **two credential prompts**:
+1. **Bearer Token for Probe.dev API**: Enter your API token from [Probe.dev dashboard](https://www.probe.dev/dashboard)
+2. **API Key for Probe.dev API**: Enter any value (e.g., "none" or just press Enter)
 
 <Note>
-After setup, you'll use the command `npx -y mint-mcp docs.probe.dev` to run your MCP server locally in client configurations.
+The setup requires two prompts but only the first Bearer Token is actually used for authentication. You can enter any placeholder value for the second prompt.
+</Note>
+
+<Note>
+You'll be asked for your API token twice during setup - once as a "Bearer Token" and once as an "API Key". Use the same Probe.dev API token for both prompts. After setup, you'll use the command `npx -y mint-mcp docs.probe.dev` to run your MCP server locally in client configurations.
 </Note>
 
 ### Step 2: Configure Your API Key
