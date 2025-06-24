@@ -1,0 +1,394 @@
+---
+title: 'MCP Integration Guide'
+description: 'Set up the Probe.dev MCP server with Cursor, Claude Desktop, and other MCP clients'
+---
+
+## Overview
+
+The Probe.dev MCP (Model Context Protocol) server enables AI assistants to directly interact with the Probe.dev API and documentation. This integration allows you to:
+
+- **Search documentation** - Find information across all Probe.dev docs
+- **Analyze media files** - Run FFprobe, MediaInfo, and Probe Report analysis
+- **Manage usage** - Check statistics and request logs
+- **Authenticate requests** - Automatically handle API authentication
+
+<Note>
+You'll need a Probe.dev API key to use the MCP server. Get yours at [probe.dev/dashboard](https://www.probe.dev/dashboard).
+</Note>
+
+## Supported Clients
+
+The Probe.dev MCP server works with any MCP-compatible client:
+
+<CardGroup cols={2}>
+  <Card title="Cursor" icon="cursor">
+    Popular AI-powered code editor with MCP support
+  </Card>
+  <Card title="Claude Desktop" icon="anthropic">
+    Official Anthropic desktop application
+  </Card>
+  <Card title="Continue" icon="code">
+    VS Code extension for AI coding assistance
+  </Card>
+  <Card title="Custom Clients" icon="gear">
+    Any application supporting the MCP protocol
+  </Card>
+</CardGroup>
+
+## Installation & Setup
+
+### Step 1: Install the MCP Server
+
+Run this command to install the Probe.dev MCP server:
+
+```bash
+npx mint-mcp add docs.probe.dev
+```
+
+When prompted, follow the authentication steps and select your preferred MCP clients.
+
+### Step 2: Configure Your API Key
+
+The MCP server needs your Probe.dev API key to make authenticated requests. Set it as an environment variable:
+
+<Tabs>
+<Tab title="macOS/Linux">
+    ```bash
+    export PROBE_API_TOKEN="your_api_key_here"
+    ```
+    
+    To make it permanent, add this line to your shell profile:
+    ```bash
+    echo 'export PROBE_API_TOKEN="your_api_key_here"' >> ~/.zshrc
+    source ~/.zshrc
+    ```
+</Tab>
+
+<Tab title="Windows">
+    ```powershell
+    $env:PROBE_API_TOKEN="your_api_key_here"
+    ```
+    
+    To make it permanent:
+    ```powershell
+    setx PROBE_API_TOKEN "your_api_key_here"
+    ```
+</Tab>
+</Tabs>
+
+<Warning>
+Never commit your API key to version control. Always use environment variables or secure configuration files.
+</Warning>
+
+## Client-Specific Configuration
+
+### Cursor Setup
+
+1. **Open Cursor Settings**
+   - Press `Cmd/Ctrl + ,` to open settings
+   - Navigate to "Extensions" → "MCP"
+
+2. **Add Probe.dev Server**
+   ```json
+   {
+     "mcpServers": {
+       "probe-dev": {
+         "command": "npx",
+         "args": ["mint-mcp", "run", "docs.probe.dev"],
+         "env": {
+           "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
+         }
+       }
+     }
+   }
+   ```
+
+3. **Restart Cursor** to activate the MCP server
+
+### Claude Desktop Setup
+
+1. **Locate Configuration File**
+   - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+2. **Edit Configuration**
+   ```json
+   {
+     "mcpServers": {
+       "probe-dev": {
+         "command": "npx",
+         "args": ["mint-mcp", "run", "docs.probe.dev"],
+         "env": {
+           "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
+         }
+       }
+     }
+   }
+   ```
+
+3. **Restart Claude Desktop**
+
+### Continue (VS Code) Setup
+
+1. **Install Continue Extension** from the VS Code marketplace
+
+2. **Configure MCP Server** in Continue's settings:
+   ```json
+   {
+     "mcpServers": [
+       {
+         "name": "probe-dev",
+         "command": "npx",
+         "args": ["mint-mcp", "run", "docs.probe.dev"],
+         "env": {
+           "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
+         }
+       }
+     ]
+   }
+   ```
+
+## Available Tools
+
+Once configured, your AI assistant will have access to these tools:
+
+### Documentation Search
+```
+Tool: search
+Description: Search across all Probe.dev documentation
+Example: "How do I authenticate with the API?"
+```
+
+### Media Analysis
+```
+Tool: analyze_media_file
+Description: Analyze media files using FFprobe, MediaInfo, or Probe Report
+Example: "Analyze this video file: https://example.com/video.mp4"
+```
+
+### Usage Statistics
+```
+Tool: get_usage_stats
+Description: Retrieve API usage statistics and metrics
+Example: "Show my current API usage this month"
+```
+
+### Request Logs
+```
+Tool: get_request_logs
+Description: Access your API request history and logs
+Example: "Show my recent failed requests"
+```
+
+## Testing Your Setup
+
+### Basic Connectivity Test
+
+Ask your AI assistant:
+
+<CodeGroup>
+```text Basic Test
+"Can you search the Probe.dev documentation for authentication information?"
+```
+
+```text API Test
+"Analyze this sample video file using FFprobe: https://probelibrary.s3.amazonaws.com/sample-source.mp4"
+```
+
+```text Usage Test
+"What's my current API usage statistics?"
+```
+</CodeGroup>
+
+### Expected Responses
+
+✅ **Working correctly** - The assistant should:
+- Return specific documentation excerpts for searches
+- Provide detailed media analysis results
+- Show your actual usage statistics
+
+❌ **Not working** - You might see:
+- "I don't have access to that information"
+- "Tool not available" errors
+- Authentication failures
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion icon="exclamation-triangle" title="API Key Issues">
+    **Symptoms**: Authentication errors, "401 Unauthorized" responses
+    
+    **Solutions**:
+    - Verify your API key is correct at [probe.dev/dashboard](https://www.probe.dev/dashboard)
+    - Check the environment variable is set: `echo $PROBE_API_TOKEN`
+    - Restart your MCP client after setting the environment variable
+    - Ensure no extra spaces or quotes in the API key
+  </Accordion>
+  
+  <Accordion icon="plug" title="Connection Problems">
+    **Symptoms**: "MCP server not responding", connection timeouts
+    
+    **Solutions**:
+    - Check your internet connection
+    - Verify the MCP server is installed: `npx mint-mcp list`
+    - Try reinstalling: `npx mint-mcp remove docs.probe.dev && npx mint-mcp add docs.probe.dev`
+    - Check for firewall/proxy issues blocking the connection
+  </Accordion>
+  
+  <Accordion icon="gear" title="Configuration Issues">
+    **Symptoms**: Tools not appearing, incorrect responses
+    
+    **Solutions**:
+    - Validate your JSON configuration syntax
+    - Ensure the `command` and `args` are correct
+    - Check file permissions on configuration files
+    - Restart your MCP client completely
+  </Accordion>
+  
+  <Accordion icon="circle-question" title="Tool Not Working">
+    **Symptoms**: Specific tools fail or return errors
+    
+    **Solutions**:
+    - Check the [API status page](https://status.probe.dev)
+    - Verify your account has sufficient quota
+    - Test the API directly with cURL to isolate issues
+    - Check request logs in your [dashboard](https://www.probe.dev/dashboard)
+  </Accordion>
+</AccordionGroup>
+
+## Usage Examples
+
+### Document Search
+```text
+"Find information about rate limits in the Probe.dev API"
+→ Returns: Rate limit documentation with specific limits and headers
+```
+
+### Media Analysis
+```text
+"Analyze this video and tell me its codec, resolution, and duration:
+https://example.com/sample.mp4"
+→ Returns: Complete FFprobe analysis with video/audio stream details
+```
+
+### Batch Operations
+```text
+"Compare the codecs used in these three video files:
+- https://example.com/video1.mp4
+- https://example.com/video2.mkv  
+- https://example.com/video3.avi"
+→ Returns: Analysis of all three files with codec comparison
+```
+
+### API Management
+```text
+"Show me my API usage for the last week and identify any failed requests"
+→ Returns: Usage statistics and error log analysis
+```
+
+## Security Best Practices
+
+<CardGroup cols={2}>
+  <Card title="API Key Security" icon="key">
+    - Store API keys in environment variables
+    - Never commit keys to version control
+    - Rotate keys regularly
+    - Use separate keys for different environments
+  </Card>
+  
+  <Card title="Access Control" icon="shield-check">
+    - Limit key permissions to necessary scopes
+    - Monitor usage in your dashboard
+    - Set up usage alerts
+    - Review access logs regularly
+  </Card>
+</CardGroup>
+
+## Advanced Configuration
+
+### Custom Tool Aliases
+
+You can create custom aliases for frequently used operations:
+
+```json
+{
+  "mcpServers": {
+    "probe-dev": {
+      "command": "npx",
+      "args": ["mint-mcp", "run", "docs.probe.dev"],
+      "env": {
+        "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
+      },
+      "toolAliases": {
+        "quick_analysis": "analyze_media_file",
+        "docs": "search"
+      }
+    }
+  }
+}
+```
+
+### Rate Limiting Configuration
+
+Configure request throttling to stay within API limits:
+
+```json
+{
+  "mcpServers": {
+    "probe-dev": {
+      "command": "npx",
+      "args": ["mint-mcp", "run", "docs.probe.dev"],
+      "env": {
+        "PROBE_API_TOKEN": "${PROBE_API_TOKEN}",
+        "PROBE_RATE_LIMIT": "100"
+      }
+    }
+  }
+}
+```
+
+## Getting Help
+
+<CardGroup cols={2}>
+  <Card
+    title="Documentation"
+    icon="book"
+    href="/api-reference/introduction"
+  >
+    Complete API reference and guides
+  </Card>
+  <Card
+    title="Dashboard"
+    icon="gauge"
+    href="https://www.probe.dev/dashboard"
+  >
+    Monitor usage and manage API keys
+  </Card>
+  <Card
+    title="Discord Community"
+    icon="discord"
+    href="https://discord.gg/kYvSfywhru"
+  >
+    Get help from the community
+  </Card>
+  <Card
+    title="API Status"
+    icon="chart-line"
+    href="https://status.probe.dev"
+  >
+    Check current API status
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+Once your MCP server is working:
+
+1. **Explore the API** - Try different analysis tools and parameters
+2. **Automate workflows** - Use the assistant to streamline media processing
+3. **Monitor usage** - Set up alerts for quota limits
+4. **Share feedback** - Help us improve the MCP integration
+
+<Tip>
+The MCP server automatically stays up-to-date with the latest Probe.dev API features and documentation.
+</Tip> 
