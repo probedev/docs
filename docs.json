@@ -54,14 +54,7 @@
       },
       {
         "tab": "API Reference",
-        "groups": [
-          {
-            "group": "API Documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          }
-        ]
+        "openapi": "/api-reference/openapi.json"
       },
       {
         "tab": "Media Formats",
@@ -136,6 +129,5 @@
     "ga4": {
       "measurementId": "G-EYJ6M6K4PC"
     }
-  },
-  "openapi": "/api-reference/openapi.json"
+  }
 }
