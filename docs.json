@@ -38,7 +38,8 @@
             "pages": [
               "index",
               "quickstart",
-              "authentication"
+              "authentication",
+              "guides/mcp-integration"
             ]
           },
           {
@@ -46,8 +47,7 @@
             "pages": [
               "guides/report-types",
               "guides/media-sources",
-              "guides/migration-guide",
-              "guides/mcp-integration"
+              "guides/migration-guide"
             ]
           }
         ]
