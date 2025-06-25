@@ -1,11 +1,21 @@
 ---
 title: 'MCP Integration Guide'
-description: 'Set up the Probe.dev MCP server with Cursor, Claude Desktop, and other MCP clients'
+description: 'Connect to the Probe.dev hosted MCP server with Cursor, Claude Desktop, and other MCP clients'
 ---
 
 ## Overview
 
-The Probe.dev MCP (Model Context Protocol) server enables AI assistants to directly interact with the Probe.dev API and documentation. This integration allows you to:
+The Probe.dev MCP (Model Context Protocol) server enables AI assistants to directly interact with the Probe.dev API and documentation. Our **hosted MCP server** uses the modern Streamable HTTP transport layer, providing a seamless integration experience.
+
+### Key Benefits
+
+✅ **No local installation** - Fully hosted service  
+✅ **Modern transport** - Uses Streamable HTTP (SSE deprecated)  
+✅ **Simple configuration** - Just URL and API token  
+✅ **Always up-to-date** - Automatically reflects latest API changes  
+✅ **Zero maintenance** - No dependencies to manage
+
+## What You Can Do
 
 - **Search documentation** - Find information across all Probe.dev docs
 - **Analyze media files** - Run FFprobe, MediaInfo, and Probe Report analysis
@@ -16,13 +26,9 @@ The Probe.dev MCP (Model Context Protocol) server enables AI assistants to direc
 You'll need a Probe.dev API key to use the MCP server. Get yours at [probe.dev/dashboard](https://www.probe.dev/dashboard).
 </Note>
 
-<Info>
-After running the initial setup with `npx mint-mcp add docs.probe.dev`, you'll use `npx -y mint-mcp docs.probe.dev` in all your MCP client configurations.
-</Info>
-
 ## Supported Clients
 
-The Probe.dev MCP server works with any MCP-compatible client:
+The Probe.dev hosted MCP server works with any MCP-compatible client:
 
 <CardGroup cols={2}>
   <Card title="Cursor" icon="cursor">
@@ -39,62 +45,29 @@ The Probe.dev MCP server works with any MCP-compatible client:
   </Card>
 </CardGroup>
 
-## Installation & Setup
+## Quick Setup
 
-### Step 1: Install the MCP Server
+### Authentication
 
-Run this command to set up the Probe.dev MCP server:
-
-```bash
-npx mint-mcp add docs.probe.dev
-```
-
-When prompted, you'll see **two credential prompts**:
-1. **Bearer Token for Probe.dev API**: Enter your API token from [Probe.dev dashboard](https://www.probe.dev/dashboard)
-2. **API Key for Probe.dev API**: Enter any placeholder value (e.g., "none" or "placeholder")
-
-<Note>
-The setup requires two prompts but only the first Bearer Token is actually used for authentication. You must enter something for the second prompt (any text will work).
-</Note>
-
-<Note>
-You'll be asked for your API token twice during setup - once as a "Bearer Token" and once as an "API Key". Use the same Probe.dev API token for both prompts. After setup, you'll use the command `npx -y mint-mcp docs.probe.dev` to run your MCP server locally in client configurations.
-</Note>
-
-### Step 2: Configure Your API Key
-
-The MCP server needs your Probe.dev API key to make authenticated requests. Set it as an environment variable:
+The hosted server supports two authentication methods:
 
 <Tabs>
-<Tab title="macOS/Linux">
-    ```bash
-    export PROBE_API_TOKEN="your_api_key_here"
-    ```
-    
-    To make it permanent, add this line to your shell profile:
-    ```bash
-    echo 'export PROBE_API_TOKEN="your_api_key_here"' >> ~/.zshrc
-    source ~/.zshrc
+<Tab title="Authorization Header (Recommended)">
+    ```json
+    "headers": {
+      "Authorization": "Bearer your-api-token"
+    }
     ```
 </Tab>
 
-<Tab title="Windows">
-    ```powershell
-    $env:PROBE_API_TOKEN="your_api_key_here"
+<Tab title="Query Parameter">
     ```
-    
-    To make it permanent:
-    ```powershell
-    setx PROBE_API_TOKEN "your_api_key_here"
+    https://mcp.probe.dev/?token=your-api-token
     ```
 </Tab>
 </Tabs>
 
-<Warning>
-Never commit your API key to version control. Always use environment variables or secure configuration files.
-</Warning>
-
-## Client-Specific Configuration
+## Client Configuration
 
 ### Cursor Setup
 
@@ -107,15 +80,13 @@ Never commit your API key to version control. Always use environment variables o
    ```
 
 2. **Add Probe.dev Server Configuration**
-   Edit `~/.cursor/mcp.json` with the following content:
    ```json
    {
      "mcpServers": {
        "probe-dev": {
-         "command": "npx",
-         "args": ["-y", "mint-mcp", "docs.probe.dev"],
-         "env": {
-           "PROBE_API_TOKEN": "your_actual_api_key_here"
+         "url": "https://mcp.probe.dev/",
+         "headers": {
+           "Authorization": "Bearer your-api-token-here"
          }
        }
      }
@@ -125,7 +96,7 @@ Never commit your API key to version control. Always use environment variables o
 3. **Restart Cursor** to activate the MCP server
 
 <Note>
-Replace `your_actual_api_key_here` with your actual API key from [probe.dev/dashboard](https://www.probe.dev/dashboard). The `-y` flag automatically accepts prompts during server startup.
+Replace `your-api-token-here` with your actual API key from [probe.dev/dashboard](https://www.probe.dev/dashboard).
 </Note>
 
 ### Claude Desktop Setup
@@ -135,15 +106,13 @@ Replace `your_actual_api_key_here` with your actual API key from [probe.dev/dash
    - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 2. **Edit Configuration**
-   Add the Probe.dev MCP server configuration:
    ```json
    {
      "mcpServers": {
        "probe-dev": {
-         "command": "npx",
-         "args": ["-y", "mint-mcp", "docs.probe.dev"],
-         "env": {
-           "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
+         "url": "https://mcp.probe.dev/",
+         "headers": {
+           "Authorization": "Bearer your-api-token-here"
          }
        }
      }
@@ -162,10 +131,9 @@ Replace `your_actual_api_key_here` with your actual API key from [probe.dev/dash
      "mcpServers": [
        {
          "name": "probe-dev",
-         "command": "npx",
-         "args": ["-y", "mint-mcp", "docs.probe.dev"],
-         "env": {
-           "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
+         "url": "https://mcp.probe.dev/",
+         "headers": {
+           "Authorization": "Bearer your-api-token-here"
          }
        }
      ]
@@ -239,24 +207,14 @@ Ask your AI assistant:
 ## Troubleshooting
 
 <AccordionGroup>
-  <Accordion icon="terminal" title="Configuration Issues">
-    **Symptoms**: MCP server not connecting, "0 tools enabled" in client
-    
-    **Solutions**:
-    - Ensure you're using the correct command: `npx -y mint-mcp docs.probe.dev`
-    - The `-y` flag is important to auto-accept prompts during startup
-    - Verify your `mcp.json` file syntax is valid JSON
-    - Check that you've completed the initial setup: `npx mint-mcp add docs.probe.dev`
-  </Accordion>
-  
-  <Accordion icon="exclamation-triangle" title="API Key Issues">
-    **Symptoms**: Authentication errors, "401 Unauthorized" responses
+  <Accordion icon="exclamation-triangle" title="Authentication Issues">
+    **Symptoms**: "401 Unauthorized" responses, authentication errors
     
     **Solutions**:
     - Verify your API key is correct at [probe.dev/dashboard](https://www.probe.dev/dashboard)
-    - Check the environment variable is set: `echo $PROBE_API_TOKEN`
-    - Restart your MCP client after setting the environment variable
-    - Ensure no extra spaces or quotes in the API key
+    - Ensure the Authorization header format is: `Bearer your-api-token`
+    - Check for extra spaces or quotes around the token
+    - Confirm your API key has the necessary permissions
   </Accordion>
   
   <Accordion icon="plug" title="Connection Problems">
@@ -264,19 +222,19 @@ Ask your AI assistant:
     
     **Solutions**:
     - Check your internet connection
-    - Verify the MCP server is installed: `npx mint-mcp list`
-    - Try reinstalling: `npx mint-mcp remove docs.probe.dev && npx mint-mcp add docs.probe.dev`
-    - Check for firewall/proxy issues blocking the connection
+    - Verify the URL is correct: `https://mcp.probe.dev/`
+    - Check for firewall/proxy issues blocking HTTPS connections
+    - Try accessing the URL directly in your browser (should show MCP status)
   </Accordion>
   
   <Accordion icon="gear" title="Configuration Issues">
-    **Symptoms**: Tools not appearing, incorrect responses
+    **Symptoms**: Tools not appearing, "0 tools enabled"
     
     **Solutions**:
     - Validate your JSON configuration syntax
-    - Ensure the `command` and `args` are correct
-    - Check file permissions on configuration files
-    - Restart your MCP client completely
+    - Ensure the `url` field is correctly formatted
+    - Check that headers are properly structured
+    - Restart your MCP client completely after configuration changes
   </Accordion>
   
   <Accordion icon="circle-question" title="Tool Not Working">
@@ -324,7 +282,7 @@ https://example.com/sample.mp4"
 
 <CardGroup cols={2}>
   <Card title="API Key Security" icon="key">
-    - Store API keys in environment variables
+    - Store API keys securely in configuration files
     - Never commit keys to version control
     - Rotate keys regularly
     - Use separate keys for different environments
@@ -340,42 +298,32 @@ https://example.com/sample.mp4"
 
 ## Advanced Configuration
 
-### Custom Tool Aliases
+### Environment Variable Support
 
-You can create custom aliases for frequently used operations:
+For enhanced security, some clients support environment variables:
 
 ```json
 {
   "mcpServers": {
     "probe-dev": {
-      "command": "npx",
-      "args": ["-y", "mint-mcp", "docs.probe.dev"],
-      "env": {
-        "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
-      },
-      "toolAliases": {
-        "quick_analysis": "analyze_media_file",
-        "docs": "search"
+      "url": "https://mcp.probe.dev/",
+      "headers": {
+        "Authorization": "Bearer ${PROBE_API_TOKEN}"
       }
     }
   }
 }
 ```
 
-### Rate Limiting Configuration
+### Query Parameter Alternative
 
-Configure request throttling to stay within API limits:
+If your client doesn't support headers, use query parameters:
 
 ```json
 {
   "mcpServers": {
     "probe-dev": {
-      "command": "npx",
-      "args": ["-y", "mint-mcp", "docs.probe.dev"],
-      "env": {
-        "PROBE_API_TOKEN": "${PROBE_API_TOKEN}",
-        "PROBE_RATE_LIMIT": "100"
-      }
+      "url": "https://mcp.probe.dev/?token=your-api-token-here"
     }
   }
 }
@@ -424,5 +372,5 @@ Once your MCP server is working:
 4. **Share feedback** - Help us improve the MCP integration
 
 <Tip>
-The MCP server automatically stays up-to-date with the latest Probe.dev API features and documentation.
+The hosted MCP server automatically stays up-to-date with the latest Probe.dev API features and documentation changes.
 </Tip> 

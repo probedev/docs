@@ -1,26 +1,18 @@
 ## Quick MCP Setup
 
-### 1. Install MCP Server
-```bash
-npx mint-mcp add docs.probe.dev
-```
+### 1. Get Your API Key
+Get your API token from [probe.dev/dashboard](https://www.probe.dev/dashboard)
 
-### 2. Set API Key
-```bash
-export PROBE_API_TOKEN="your_api_key_here"
-```
-
-### 3. Configure Your Client
+### 2. Configure Your Client
 
 <CodeGroup>
 ```json Cursor (~/.cursor/mcp.json)
 {
   "mcpServers": {
     "probe-dev": {
-      "command": "npx",
-      "args": ["mint-mcp", "run", "docs.probe.dev"],
-      "env": {
-        "PROBE_API_TOKEN": "your_actual_api_key_here"
+      "url": "https://mcp.probe.dev/",
+      "headers": {
+        "Authorization": "Bearer your-api-token-here"
       }
     }
   }
@@ -31,10 +23,9 @@ export PROBE_API_TOKEN="your_api_key_here"
 {
   "mcpServers": {
     "probe-dev": {
-      "command": "npx",
-      "args": ["mint-mcp", "run", "docs.probe.dev"],
-      "env": {
-        "PROBE_API_TOKEN": "${PROBE_API_TOKEN}"
+      "url": "https://mcp.probe.dev/",
+      "headers": {
+        "Authorization": "Bearer your-api-token-here"
       }
     }
   }
@@ -42,7 +33,7 @@ export PROBE_API_TOKEN="your_api_key_here"
 ```
 </CodeGroup>
 
-### 4. Test
+### 3. Test
 Ask your AI: *"Search the Probe.dev docs for authentication"*
 
 <Card title="Full Setup Guide" href="/guides/mcp-integration">
