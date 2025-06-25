@@ -54,7 +54,7 @@
       },
       {
         "tab": "API Reference",
-        "openapi": "/api-reference/openapi.json"
+        "openapi": "https://api.probedev.com/frontend/api/v1/openapi.json?include-base-path=true"
       },
       {
         "tab": "Media Formats",
