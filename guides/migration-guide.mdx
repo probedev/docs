@@ -286,10 +286,14 @@ def handle_analysis_complete():
 
 | **Analysis Type** | **Typical Response Time** | **Notes** |
 |-------------------|---------------------------|-----------|
-| FFprobe only | 2-5 seconds | Fast technical analysis |
-| MediaInfo only | 2-4 seconds | Quick format detection |
-| Probe Report | 5-10 seconds | ML-enhanced processing |
-| All tools | 8-15 seconds | Comprehensive analysis |
+| FFprobe only | ~500ms average | Time varies by file complexity and format |
+| MediaInfo only | ~500ms average | Time varies by file complexity and format |
+| Probe Report | ~0ms | Generated almost instantly from existing data |
+| All tools | ~500ms average | Dominated by FFprobe/MediaInfo processing |
+
+<Note>
+Processing times depend on source file complexity, format, and size. Network latency and queue times may add additional overhead during peak usage.
+</Note>
 
 ## Support & Resources
 
