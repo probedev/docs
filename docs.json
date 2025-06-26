@@ -48,6 +48,7 @@
               "guides/report-types",
               "guides/media-sources",
               "guides/streaming-analysis",
+              "guides/hls-validation",
               "guides/migration-guide"
             ]
           }

@@ -1,0 +1,553 @@
+---
+title: 'HLS Validation Guide'
+description: 'Complete guide to HLS validation with Apple MediaStreamValidator for compliance and quality assurance'
+---
+
+## Overview
+
+HTTP Live Streaming (HLS) validation ensures your streams meet Apple's technical specifications and work reliably across all Apple devices. Probe.dev provides Apple's official MediaStreamValidator tool as a service, eliminating the need for local tool installation while providing comprehensive validation reports.
+
+<Info>
+MediaStreamValidator is essential for App Store submissions, streaming service quality assurance, and debugging playback issues across iOS, macOS, and tvOS devices.
+</Info>
+
+## Why HLS Validation Matters
+
+<CardGroup cols={2}>
+  <Card title="App Store Requirements" icon="apple">
+    **Mandatory for iOS Apps**  
+    Apple requires HLS compliance for video streaming apps
+    
+    **Rejection Prevention**  
+    Avoid App Store rejections due to streaming issues
+  </Card>
+  
+  <Card title="Playback Quality" icon="play">
+    **Universal Compatibility**  
+    Ensure streams work across all Apple devices
+    
+    **Error Prevention**  
+    Catch issues before they reach end users
+  </Card>
+  
+  <Card title="Specification Compliance" icon="check-circle">
+    **RFC 8216 Standards**  
+    Validate against official HLS specifications
+    
+    **Future-Proofing**  
+    Ensure compatibility with upcoming iOS versions
+  </Card>
+  
+  <Card title="Debugging Support" icon="bug">
+    **Detailed Error Reports**  
+    Identify specific compliance violations
+    
+    **Root Cause Analysis**  
+    Pinpoint encoding or packaging issues
+  </Card>
+</CardGroup>
+
+## Getting Started
+
+### Basic HLS Validation
+
+Validate an HLS playlist for Apple compliance:
+
+```bash
+curl -G https://api.probe.dev/v1/probe/mediastreamvalidator \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://example.com/master.m3u8"
+```
+
+### Quick Playlist-Only Check
+
+For faster validation during development:
+
+```bash
+curl -G https://api.probe.dev/v1/probe/mediastreamvalidator \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://example.com/master.m3u8" \
+  --data-urlencode "parse_playlist_only=true"
+```
+
+<Tip>
+Use `parse_playlist_only=true` for rapid iteration during development. Switch to full validation before production deployment.
+</Tip>
+
+## Comprehensive Validation
+
+### Full Stream Analysis
+
+For production-ready validation including segment analysis:
+
+```bash
+curl -X POST https://api.probe.dev/v1/probe/mediastreamvalidator \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/master.m3u8",
+    "parse_playlist_only": false,
+    "enable_cli_output": true,
+    "timeout": 650000,
+    "inject_json": true
+  }'
+```
+
+### Parameter Configuration
+
+| **Parameter** | **Purpose** | **Recommended Values** |
+|---------------|-------------|------------------------|
+| `parse_playlist_only` | Skip segment download/analysis | `true` for development, `false` for production |
+| `enable_cli_output` | Include raw MediaStreamValidator output | `true` for debugging |
+| `timeout` | Maximum analysis time (milliseconds) | `650000` (10+ minutes for large streams) |
+| `inject_json` | Enhanced JSON formatting | `true` for easier parsing |
+
+## Apple HLS Compliance Requirements
+
+### Essential Compliance Checks
+
+MediaStreamValidator verifies these critical requirements:
+
+<AccordionGroup>
+  <Accordion title="Bitrate Ladder Requirements">
+    **Minimum Requirements:**
+    - At least 3 video quality levels for iOS apps
+    - 64 kbps audio-only variant required
+    - Maximum 10 Mbps bitrate for cellular delivery
+    
+    **Recommended Structure:**
+    ```
+    Audio-only: 64 kbps
+    Low: 400-800 kbps
+    Medium: 1.2-2.5 Mbps
+    High: 3-6 Mbps
+    Premium: 8-10 Mbps (WiFi only)
+    ```
+  </Accordion>
+  
+  <Accordion title="Segment Duration Standards">
+    **Target Duration:**
+    - 6-second segments recommended
+    - 10-second maximum for new content
+    - Consistent duration across quality levels
+    
+    **Validation Points:**
+    - `#EXT-X-TARGETDURATION` accuracy
+    - Segment length consistency
+    - Discontinuity handling
+  </Accordion>
+  
+  <Accordion title="Codec Requirements">
+    **Video Codecs:**
+    - H.264 Baseline, Main, or High profile
+    - HEVC (H.265) for 4K content
+    - Proper level constraints
+    
+    **Audio Codecs:**
+    - AAC-LC required for all streams
+    - HE-AAC v1/v2 for low-bitrate variants
+    - Dolby Digital/Digital Plus for premium content
+  </Accordion>
+  
+  <Accordion title="Closed Caption Compliance">
+    **Requirements:**
+    - WebVTT format for new implementations
+    - CEA-608/708 support for broadcast content
+    - Proper language tagging
+    - Accessibility compliance
+  </Accordion>
+</AccordionGroup>
+
+## Common Validation Errors
+
+### Critical Issues
+
+<Steps>
+<Step title="Bitrate Declaration Mismatch">
+**Error:** `BANDWIDTH attribute doesn't match measured bitrate`
+
+**Cause:** Playlist declares different bitrate than actual stream
+
+**Solution:**
+```bash
+# Re-encode with correct bitrate or update playlist
+ffmpeg -i input.mp4 -b:v 2500k -maxrate 2750k -bufsize 5000k output.m3u8
+```
+</Step>
+
+<Step title="Segment Duration Violations">
+**Error:** `Segment duration exceeds target duration`
+
+**Cause:** Individual segments longer than `#EXT-X-TARGETDURATION`
+
+**Solution:**
+```bash
+# Adjust segment duration during encoding
+ffmpeg -i input.mp4 -hls_time 6 -hls_list_size 0 output.m3u8
+```
+</Step>
+
+<Step title="Missing Audio-Only Variant">
+**Error:** `No audio-only variant found`
+
+**Cause:** Required 64 kbps audio stream missing from master playlist
+
+**Solution:**
+```bash
+# Create audio-only variant
+ffmpeg -i input.mp4 -vn -acodec aac -b:a 64k audio_only.m3u8
+```
+</Step>
+</Steps>
+
+### Warning-Level Issues
+
+<Tabs>
+<Tab title="Playlist Optimization">
+**Warnings:**
+- Inefficient bitrate ladder gaps
+- Missing I-frame playlists
+- Suboptimal segment counts
+
+**Impact:** Playback experience degradation
+</Tab>
+
+<Tab title="Accessibility">
+**Warnings:**
+- Missing closed caption tracks
+- Incomplete language tagging
+- Audio description tracks absent
+
+**Impact:** App Store review concerns
+</Tab>
+
+<Tab title="Performance">
+**Warnings:**
+- Large segment file sizes
+- Excessive variant count
+- Inefficient codec settings
+
+**Impact:** Startup time and buffering issues
+</Tab>
+</Tabs>
+
+## Integration Workflows
+
+### CI/CD Pipeline Integration
+
+#### GitHub Actions Example
+
+```yaml
+name: HLS Validation
+on:
+  push:
+    paths: ['streams/**/*.m3u8']
+
+jobs:
+  validate-hls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Validate HLS Streams
+        run: |
+          for playlist in streams/**/*.m3u8; do
+            echo "Validating $playlist"
+            response=$(curl -s -G https://api.probe.dev/v1/probe/mediastreamvalidator \
+              --data-urlencode "token=${{ secrets.PROBE_API_TOKEN }}" \
+              --data-urlencode "url=https://cdn.example.com/$playlist" \
+              --data-urlencode "parse_playlist_only=true")
+            
+            if echo "$response" | jq -r '.success' | grep -q false; then
+              echo "❌ Validation failed for $playlist"
+              echo "$response" | jq -r '.error'
+              exit 1
+            else
+              echo "✅ Validation passed for $playlist"
+            fi
+          done
+```
+
+#### Jenkins Pipeline
+
+```groovy
+pipeline {
+    agent any
+    environment {
+        PROBE_API_TOKEN = credentials('probe-api-token')
+    }
+    
+    stages {
+        stage('HLS Validation') {
+            steps:
+                script {
+                    def playlists = sh(
+                        script: "find streams/ -name '*.m3u8'",
+                        returnStdout: true
+                    ).trim().split('\n')
+                    
+                    playlists.each { playlist ->
+                        def response = sh(
+                            script: """
+                                curl -s -G https://api.probe.dev/v1/probe/mediastreamvalidator \\
+                                --data-urlencode "token=${PROBE_API_TOKEN}" \\
+                                --data-urlencode "url=https://cdn.example.com/${playlist}"
+                            """,
+                            returnStdout: true
+                        )
+                        
+                        def result = readJSON text: response
+                        if (!result.success) {
+                            error("HLS validation failed for ${playlist}: ${result.error}")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+### Pre-Publish Validation Script
+
+```python
+#!/usr/bin/env python3
+import requests
+import sys
+import time
+from urllib.parse import urljoin
+
+def validate_hls_stream(base_url, playlist_path, api_token):
+    """Validate HLS stream before publishing"""
+    
+    full_url = urljoin(base_url, playlist_path)
+    
+    # Start validation
+    response = requests.get(
+        'https://api.probe.dev/v1/probe/mediastreamvalidator',
+        params={
+            'token': api_token,
+            'url': full_url,
+            'parse_playlist_only': False,
+            'enable_cli_output': True
+        }
+    )
+    
+    if response.status_code != 200:
+        print(f"❌ API Error: {response.status_code}")
+        return False
+    
+    data = response.json()
+    
+    if not data.get('success', False):
+        print(f"❌ Validation Failed: {data.get('error', 'Unknown error')}")
+        if 'cli_output' in data:
+            print("\nDetailed Output:")
+            print(data['cli_output'])
+        return False
+    
+    print(f"✅ Validation Passed: {playlist_path}")
+    return True
+
+if __name__ == "__main__":
+    # Validate all streams before deployment
+    streams = [
+        "master.m3u8",
+        "audio_only/playlist.m3u8",
+        "video/720p/playlist.m3u8"
+    ]
+    
+    base_url = "https://cdn.example.com/streams/"
+    api_token = os.getenv('PROBE_API_TOKEN')
+    
+    all_passed = True
+    for stream in streams:
+        if not validate_hls_stream(base_url, stream, api_token):
+            all_passed = False
+    
+    sys.exit(0 if all_passed else 1)
+```
+
+## App Store Submission Workflow
+
+### Pre-Submission Checklist
+
+<AccordionGroup>
+  <Accordion title="Technical Validation">
+    - [ ] All HLS streams pass MediaStreamValidator
+    - [ ] Audio-only variant present (64 kbps)
+    - [ ] Minimum 3 video quality levels
+    - [ ] Closed captions properly implemented
+    - [ ] Segment durations within specifications
+    - [ ] Bitrate declarations accurate
+  </Accordion>
+  
+  <Accordion title="Device Testing">
+    - [ ] Test on iPhone (latest iOS)
+    - [ ] Test on iPad (latest iPadOS)
+    - [ ] Test on Apple TV (latest tvOS)
+    - [ ] Test on Mac (latest macOS Safari)
+    - [ ] Verify cellular vs WiFi behavior
+  </Accordion>
+  
+  <Accordion title="Accessibility Compliance">
+    - [ ] Closed captions available
+    - [ ] Audio descriptions where applicable
+    - [ ] Language tags properly set
+    - [ ] VoiceOver compatibility verified
+  </Accordion>
+</AccordionGroup>
+
+### Documentation for App Review
+
+Include MediaStreamValidator reports in your App Store submission:
+
+```bash
+# Generate comprehensive validation report
+curl -X POST https://api.probe.dev/v1/probe/mediastreamvalidator \
+  -H "Authorization: Bearer $PROBE_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://your-cdn.com/master.m3u8",
+    "parse_playlist_only": false,
+    "enable_cli_output": true
+  }' > hls_validation_report.json
+```
+
+## Performance Optimization
+
+### Validation Speed Tips
+
+1. **Development Phase:** Use `parse_playlist_only=true`
+2. **Staging Phase:** Full validation with reasonable timeout
+3. **Production Phase:** Validate representative samples
+4. **CI/CD:** Parallel validation of multiple streams
+
+### Recommended Timeouts
+
+| **Stream Type** | **Recommended Timeout** | **Reasoning** |
+|-----------------|------------------------|---------------|
+| Short clips (< 5 min) | 2-3 minutes | Quick analysis |
+| Standard content (5-60 min) | 5-8 minutes | Thorough checking |
+| Long-form content (> 1 hour) | 10-15 minutes | Complete validation |
+| Live streams | 3-5 minutes | Sample-based analysis |
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+<AccordionGroup>
+  <Accordion title="Timeout Errors">
+    **Symptoms:** Analysis times out before completion
+    
+    **Solutions:**
+    - Increase `timeout` parameter (max 650,000ms)
+    - Use `parse_playlist_only=true` for faster validation
+    - Validate shorter content samples first
+    - Check network connectivity to stream source
+  </Accordion>
+  
+  <Accordion title="Access Denied Errors">
+    **Symptoms:** Cannot access stream URL
+    
+    **Solutions:**
+    - Verify stream URL is publicly accessible
+    - Check CDN/server allows HEAD requests
+    - Ensure proper CORS headers if needed
+    - Test URL accessibility from external networks
+  </Accordion>
+  
+  <Accordion title="Incomplete Validation">
+    **Symptoms:** Partial results or missing analysis
+    
+    **Solutions:**
+    - Set `parse_playlist_only=false` for complete analysis
+    - Increase timeout for large streams
+    - Check stream availability during validation
+    - Verify all referenced segments are accessible
+  </Accordion>
+</AccordionGroup>
+
+### Debugging with CLI Output
+
+Enable detailed output for troubleshooting:
+
+```bash
+curl -X POST https://api.probe.dev/v1/probe/mediastreamvalidator \
+  -H "Authorization: Bearer $PROBE_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://problematic-stream.com/playlist.m3u8",
+    "enable_cli_output": true,
+    "parse_playlist_only": false
+  }' | jq -r '.cli_output'
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Development Workflow" icon="code">
+    - Validate frequently during encoding
+    - Use playlist-only validation for quick checks
+    - Automate validation in build pipelines
+    - Keep validation reports for debugging
+  </Card>
+  
+  <Card title="Production Deployment" icon="rocket">
+    - Full validation before CDN upload
+    - Validate after CDN propagation
+    - Monitor validation results over time
+    - Document compliance for App Store
+  </Card>
+  
+  <Card title="Performance" icon="gauge">
+    - Cache validation results for unchanged content
+    - Validate samples of long-form content
+    - Use appropriate timeouts for content length
+    - Parallel validation for multiple streams
+  </Card>
+  
+  <Card title="Quality Assurance" icon="shield-check">
+    - Validate across all bitrate variants
+    - Test accessibility features
+    - Verify closed caption compliance
+    - Check audio-only variant functionality
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Streaming Analysis"
+    icon="chart-line"
+    href="/guides/streaming-analysis"
+  >
+    Learn about comprehensive streaming format analysis
+  </Card>
+  <Card
+    title="Report Types"
+    icon="chart-bar"
+    href="/guides/report-types"
+  >
+    Understand all available analysis tools
+  </Card>
+  <Card
+    title="Sample Library"
+    icon="video"
+    href="/reference/sample-media-library"
+  >
+    Test validation with sample HLS streams
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/introduction"
+  >
+    Complete MediaStreamValidator API documentation
+  </Card>
+</CardGroup>
+
+<Note>
+Need help with HLS validation or App Store submission? Contact our support team at support@probe.dev for personalized assistance with your streaming workflows.
+</Note> 
