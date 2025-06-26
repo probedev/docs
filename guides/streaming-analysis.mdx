@@ -8,7 +8,7 @@ description: 'Comprehensive guide to analyzing HLS, DASH, and live streaming pro
 Probe.dev provides comprehensive analysis capabilities for streaming media formats and protocols. Whether you're working with adaptive streaming formats like HLS and DASH, or live streaming protocols such as RTMP, RTSP, and SRT, our API can extract detailed technical information to help optimize your streaming workflows.
 
 <Info>
-Streaming analysis supports video, audio, and caption tracks across all formats and protocols, providing the same level of detail as traditional file analysis.
+Streaming analysis supports video, audio, and caption tracks across all formats and protocols, providing the same level of detail as traditional file analysis. For adaptive streaming formats (HLS/DASH), each quality variant appears as a separate track in the results.
 </Info>
 
 ## Adaptive Streaming Formats
@@ -34,6 +34,10 @@ curl -G https://api.probe.dev/v1/probe/file \
 - Audio and subtitle track information
 - Codec details (H.264, AAC, etc.)
 - Segment duration and structure
+
+<Info>
+Each HLS variant (quality level) appears as a separate track in the analysis results, with the same field structure as single file analysis. You'll receive detailed codec, resolution, and bitrate information for each variant stream.
+</Info>
 
 #### Media Playlist Analysis
 
@@ -86,6 +90,10 @@ curl -X POST https://api.probe.dev/v1/probe/file \
 - Codec profiles and levels
 - Segment templates and timelines
 - Accessibility features
+
+<Info>
+Each DASH representation (quality variant) within adaptation sets appears as a separate track in the analysis results. You'll receive the same detailed field structure as single file analysis for each representation.
+</Info>
 
 #### Live vs VOD DASH Analysis
 
