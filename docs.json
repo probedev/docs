@@ -74,11 +74,11 @@
         "tab": "API Reference",
         "openapi": "https://api.probedev.com/frontend/api/v1/openapi.json?include-base-path=true"
       },
-      {
-        "tab": "Reference",
-        "groups": [
-          {
-            "group": "Format Support",
+              {
+          "tab": "Media Formats",
+          "groups": [
+            {
+              "group": "Format Support",
             "pages": [
               "reference/audio-codecs",
               "reference/video-codecs",
