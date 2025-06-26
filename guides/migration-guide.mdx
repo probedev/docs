@@ -170,6 +170,42 @@ async function analyzeMedia(fileUrl) {
 }
 ```
 
+## Tool Version Compatibility
+
+When migrating from local tools, you can specify the exact same versions you're currently running to ensure consistent results during migration.
+
+### Supported Tool Versions
+
+| **Tool** | **Available Versions** | **Default** | **User Configurable** |
+|----------|------------------------|-------------|------------------------|
+| **FFprobe** | `latest`, `7.0`, `6.0`, `5.1`, `5.0`, `4.4`, `4.3`, `4.2`, `4.1`, `4.0`, `3.4`, `3.3` | `latest` | ✅ Yes |
+| **MediaInfo** | `latest`, `24.06`, `23.11`, `22.12`, `21.09`, `20.09`, `19.09`, `18.12` | `latest` | ✅ Yes |
+| **MediaStreamValidator** | Version 1.24.5 (686.23b-241118) | Fixed | ❌ No |
+
+### Version Specification Examples
+
+**Match your local FFprobe version:**
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://example.com/video.mp4" \
+  --data-urlencode "ffprobe[version]=6.0" \
+  --data-urlencode "ffprobe[enabled]=true"
+```
+
+**Match your local MediaInfo version:**
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://example.com/video.mp4" \
+  --data-urlencode "mediainfo[version]=23.11" \
+  --data-urlencode "mediainfo[enabled]=true"
+```
+
+<Tip>
+Check your local tool versions with `ffprobe -version` and `mediainfo --version` to specify the exact same versions in your API calls during migration testing.
+</Tip>
+
 ## Parameter Mapping
 
 ### FFprobe Parameters
