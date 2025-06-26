@@ -54,7 +54,7 @@ https://api.probe.dev
 ## Main Endpoints
 
 ### Media Analysis
-- **`/v1/probe/file`** - Analyze media files with FFprobe, MediaInfo, and Probe Report
+- **`/v1/probe/file`** - Analyze media files, streaming formats (HLS, DASH), and streaming protocols (RTMP, RTSP, SRT) with FFprobe, MediaInfo, and Probe Report
 - **`/v1/probe/mediastreamvalidator`** - Validate HLS streams with Apple's MediaStreamValidator
 
 ### Management
@@ -62,9 +62,10 @@ https://api.probe.dev
 - **`/frontend/api/v1/statistics/*`** - Usage statistics and analytics
 - **`/frontend/api/v1/user/*`** - User management and profiles
 
-## Quick Start Example
+## Quick Start Examples
 
-Analyze a media file with all available tools:
+### Analyze a Media File
+Analyze a standard media file with all available tools:
 
 ```bash
 curl -X POST https://api.probe.dev/v1/probe/file \
@@ -87,6 +88,36 @@ curl -X POST https://api.probe.dev/v1/probe/file \
       "diff": true
     }
   }'
+```
+
+### Analyze HLS Stream
+Analyze an HLS playlist to understand adaptive streaming configuration:
+
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=YOUR_API_TOKEN" \
+  --data-urlencode "url=https://probelibrary.s3.amazonaws.com/hls/sample/big_buck_bunny.m3u8" \
+  --data-urlencode "only=mediainfo"
+```
+
+### Analyze DASH Manifest
+Examine a DASH manifest for video track configurations:
+
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=YOUR_API_TOKEN" \
+  --data-urlencode "url=https://cdn.bitmovin.com/content/assets/art-of-motion-dash-hls-progressive/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd" \
+  --data-urlencode "inject_json=true"
+```
+
+### Analyze RTMP Stream
+Probe an RTMP stream for technical specifications:
+
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=YOUR_API_TOKEN" \
+  --data-urlencode "url=rtmp://matthewc.co.uk/vod/scooter" \
+  --data-urlencode "only=ffprobe"
 ```
 
 ## Response Format

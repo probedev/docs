@@ -1,13 +1,15 @@
 ---
 title: 'Media Sources'
-description: 'Learn how to provide media assets from various sources'
+description: 'Learn how to provide media assets from various sources including streaming formats and protocols'
 ---
 
 ## Overview
 
-Probe.dev can analyze media files from various sources. Simply provide a direct link to your media file, and our API will securely fetch and analyze it.
+Probe.dev can analyze media files from various sources including traditional file formats, adaptive streaming formats (HLS, DASH), and live streaming protocols (RTMP, RTSP, SRT). Simply provide a direct link to your media asset, and our API will securely fetch and analyze it.
 
-## Public URLs
+## Static Media Files
+
+### Public URLs
 
 The simplest approach is to provide a direct HTTP/HTTPS URL to your media file:
 
@@ -21,6 +23,173 @@ The simplest approach is to provide a direct HTTP/HTTPS URL to your media file:
 - Must be publicly accessible
 - Must be a direct link to the media file (not a webpage)
 - Supports HTTP and HTTPS protocols
+
+## Streaming Formats
+
+### HLS (HTTP Live Streaming)
+
+Analyze HLS playlists and their associated media segments:
+
+```json
+{
+    "url": "https://probelibrary.s3.amazonaws.com/hls/sample/big_buck_bunny.m3u8"
+}
+```
+
+**Supported HLS features:**
+- Master playlists (multi-bitrate)
+- Media playlists (single bitrate)
+- Video, audio, and subtitle tracks
+- Variant streams analysis
+- Segment information
+
+<Note>
+HLS analysis provides detailed information about adaptive bitrate ladders, segment durations, and track configurations.
+</Note>
+
+### DASH (Dynamic Adaptive Streaming)
+
+Examine DASH manifests and media presentations:
+
+```json
+{
+    "url": "https://cdn.bitmovin.com/content/assets/art-of-motion-dash-hls-progressive/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd"
+}
+```
+
+**Supported DASH features:**
+- Media Presentation Description (MPD) analysis
+- Adaptation sets and representations
+- Video, audio, and text tracks
+- Segment templates and timelines
+- Initialization segments
+
+<Tip>
+DASH analysis reveals codec profiles, bitrate ladders, and segment structure for adaptive streaming optimization.
+</Tip>
+
+## Streaming Protocols
+
+### RTMP (Real-Time Messaging Protocol)
+
+Analyze live RTMP streams and Video on Demand (VOD) content:
+
+```json
+{
+    "url": "rtmp://matthewc.co.uk/vod/scooter"
+}
+```
+
+**Common RTMP URL formats:**
+```
+rtmp://server.example.com/live/stream_key
+rtmp://server.example.com/vod/video_name
+rtmps://secure.example.com/live/stream_key
+```
+
+### RTSP (Real Time Streaming Protocol)
+
+Probe RTSP streams for metadata and technical specifications:
+
+```json
+{
+    "url": "rtsp://server.example.com:554/stream/video"
+}
+```
+
+**Common RTSP URL formats:**
+```
+rtsp://server.example.com/stream_name
+rtsp://server.example.com:554/live/stream
+rtsps://secure.example.com/secure_stream
+```
+
+### SRT (Secure Reliable Transport)
+
+Analyze SRT streams for low-latency video delivery:
+
+```json
+{
+    "url": "srt://server.example.com:1234"
+}
+```
+
+**SRT URL formats:**
+```
+srt://server.example.com:port
+srt://server.example.com:port?streamid=stream_name
+```
+
+<Warning>
+Streaming protocol analysis may have longer processing times compared to static files due to the need to establish connections and buffer content.
+</Warning>
+
+## Content Types Supported
+
+All streaming formats and protocols support analysis of:
+
+<CardGroup cols={3}>
+  <Card title="Video Streams" icon="video">
+    - Codec identification
+    - Resolution and frame rate
+    - Bitrate analysis
+    - Color space information
+  </Card>
+  
+  <Card title="Audio Tracks" icon="music">
+    - Audio codec details
+    - Channel configuration
+    - Sample rate and bit depth
+    - Bitrate information
+  </Card>
+  
+  <Card title="Subtitle/Caption Tracks" icon="closed-captioning">
+    - Text track formats
+    - Language identification
+    - Timing information
+    - Accessibility features
+  </Card>
+</CardGroup>
+
+## Example Analysis Results
+
+### HLS Stream Analysis
+When analyzing an HLS playlist, you'll receive information about:
+
+```json
+{
+  "master_playlist": {
+    "variant_streams": [
+      {
+        "bandwidth": 1200000,
+        "resolution": "1280x720",
+        "codecs": "avc1.4d401f,mp4a.40.2",
+        "uri": "720p.m3u8"
+      }
+    ]
+  },
+  "media_segments": {
+    "target_duration": 10,
+    "sequence_number": 0,
+    "segments_count": 180
+  }
+}
+```
+
+### RTMP Stream Analysis
+RTMP stream analysis provides real-time stream characteristics:
+
+```json
+{
+  "stream_info": {
+    "video_codec": "H264",
+    "audio_codec": "AAC",
+    "resolution": "1920x1080",
+    "frame_rate": 30,
+    "bitrate": 2500000
+  }
+}
+```
 
 ## Amazon S3 Integration
 
@@ -171,6 +340,11 @@ Some platforms require specific URL formats or may have rate limiting. Ensure yo
 https://example.com/video.mp4
 https://cdn.example.com/media/stream.mkv
 https://bucket.s3.amazonaws.com/folder/file.avi
+https://probelibrary.s3.amazonaws.com/hls/sample/playlist.m3u8
+https://cdn.bitmovin.com/content/manifest.mpd
+rtmp://server.com/live/stream_key
+rtsp://camera.example.com:554/stream
+srt://server.example.com:1234
 ftp://server.com/media/video.mov
 ```
 
@@ -208,18 +382,32 @@ file:///local/path/video.mp4              // Local file path
 |-----------|-----------|--------------|
 | `403 Forbidden` | Private content, credentials missing | Use presigned URL or add credentials |
 | `404 Not Found` | Incorrect URL or file doesn't exist | Verify URL and file existence |
-| `Timeout` | Large file or slow connection | Check file size and network connectivity |
+| `Timeout` | Large file, slow connection, or stream buffer time | Check file size, network connectivity, and stream availability |
 | `Invalid URL` | Malformed URL | Validate URL format |
+| `Stream Unavailable` | RTMP/RTSP stream offline | Verify stream is active and accessible |
 
 ### Testing Media Sources
 
 Verify your media URL is accessible:
 
 ```bash
-# Test with curl
+# Test static files with curl
 curl -I "https://your-media-url.com/video.mp4"
 
-# Should return HTTP 200 and Content-Type: video/*
+# Test HLS playlist
+curl -I "https://your-hls-url.com/playlist.m3u8"
+
+# Should return HTTP 200 and appropriate Content-Type
+```
+
+### Testing Streaming Protocols
+
+```bash
+# Test RTMP stream with FFprobe
+ffprobe -v quiet -print_format json -show_format rtmp://server.com/live/stream
+
+# Test RTSP stream
+ffprobe -v quiet -print_format json -show_format rtsp://camera.com:554/stream
 ```
 
 ## Next Steps
@@ -237,6 +425,6 @@ curl -I "https://your-media-url.com/video.mp4"
     icon="video"
     href="/reference/sample-media-library"
   >
-    Try our sample files for testing
+    Try our sample files including streaming formats
   </Card>
 </CardGroup> 

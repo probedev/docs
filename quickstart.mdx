@@ -4,7 +4,7 @@ description: 'Get started with Probe.dev API in under 5 minutes'
 ---
 
 <Note>
-Ready to get started? [Sign up for free](https://www.probe.dev/dashboard) to get your API key and begin analyzing media files.
+Ready to get started? [Sign up for free](https://www.probe.dev/dashboard) to get your API key and begin analyzing media files and streaming sources.
 </Note>
 
 ## Minimal Request
@@ -44,6 +44,8 @@ We accept both GET and POST requests:
 
 ## Provide the Media Asset
 
+### Static Media Files
+
 Specify a direct link to media file hosted on any webserver or within a publicly available S3 bucket. If you don't have a media asset handy, check out our [sample media library](/reference/sample-media-library).
 
 ```json
@@ -51,6 +53,43 @@ Specify a direct link to media file hosted on any webserver or within a publicly
     "url": "https://probelibrary.s3.amazonaws.com/sample-source.mp4"
 }
 ```
+
+### Streaming Formats & Protocols
+
+Analyze streaming sources including HLS playlists, DASH manifests, and live protocols:
+
+<Tabs>
+<Tab title="HLS Playlist">
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "only=mediainfo" \
+  --data-urlencode "url=https://probelibrary.s3.amazonaws.com/hls/sample/big_buck_bunny.m3u8"
+```
+</Tab>
+
+<Tab title="DASH Manifest">
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "inject_json=true" \
+  --data-urlencode "url=https://cdn.bitmovin.com/content/assets/art-of-motion-dash-hls-progressive/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd"
+```
+</Tab>
+
+<Tab title="RTMP Stream">
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "only=ffprobe" \
+  --data-urlencode "url=rtmp://matthewc.co.uk/vod/scooter"
+```
+</Tab>
+</Tabs>
+
+<Info>
+Streaming analysis supports video, audio, and caption tracks across all supported protocols (HLS, DASH, RTMP, RTSP, SRT).
+</Info>
 
 ## Alternative: Use with AI Assistants
 
@@ -67,6 +106,13 @@ Skip the manual API calls and integrate Probe.dev directly with your AI assistan
     href="/authentication"
   >
     Learn about API authentication methods
+  </Card>
+  <Card
+    title="Media Sources"
+    icon="link"
+    href="/guides/media-sources"
+  >
+    Comprehensive guide to static files and streaming formats
   </Card>
   <Card
     title="MCP Integration"
@@ -94,6 +140,6 @@ Skip the manual API calls and integrate Probe.dev directly with your AI assistan
     icon="video"
     href="/reference/sample-media-library"
   >
-    Test with our sample media files
+    Test with our sample files and streaming sources
   </Card>
 </CardGroup>

@@ -1,17 +1,57 @@
 ---
 title: 'Sample Media Library'
-description: 'Test media files for trying out the Probe.dev API'
+description: 'Test media files and streaming sources for trying out the Probe.dev API'
 ---
 
 ## Overview
 
-Our sample media library contains a diverse set of media files with various codecs, containers, and characteristics. Use these files to test the Probe.dev API without needing your own media assets.
+Our sample media library contains a diverse set of media files and streaming sources with various codecs, containers, and characteristics. Use these files to test the Probe.dev API without needing your own media assets.
 
 <Tip>
-All sample files are hosted on our CDN and are freely accessible for testing purposes.
+All sample files and streaming sources are hosted on our CDN and are freely accessible for testing purposes.
 </Tip>
 
-## Available Sample Files
+## Streaming Formats & Protocols
+
+Test Probe.dev's streaming capabilities with these live examples:
+
+| Source                                                                                              | Format/Protocol | Description                    |
+| --------------------------------------------------------------------------------------------------- | --------------- | ------------------------------ |
+| [big\_buck\_bunny.m3u8](https://probelibrary.s3.amazonaws.com/hls/sample/big_buck_bunny.m3u8)       | HLS             | Multi-bitrate HLS playlist     |
+| [Art of Motion DASH](https://cdn.bitmovin.com/content/assets/art-of-motion-dash-hls-progressive/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd) | DASH | Professional demo DASH manifest |
+| rtmp://matthewc.co.uk/vod/scooter                                                                   | RTMP VOD        | RTMP Video on Demand stream    |
+
+### Streaming Analysis Examples
+
+#### HLS Playlist Analysis
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "only=mediainfo" \
+  --data-urlencode "url=https://probelibrary.s3.amazonaws.com/hls/sample/big_buck_bunny.m3u8"
+```
+
+#### DASH Manifest Analysis
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "inject_json=true" \
+  --data-urlencode "url=https://cdn.bitmovin.com/content/assets/art-of-motion-dash-hls-progressive/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd"
+```
+
+#### RTMP Stream Analysis
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "only=ffprobe" \
+  --data-urlencode "url=rtmp://matthewc.co.uk/vod/scooter"
+```
+
+<Note>
+Streaming protocol analysis may take longer than static file analysis due to connection establishment and content buffering requirements.
+</Note>
+
+## Static Media Files
 
 | File                                                                                                                                                | Media Type                         |
 | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
@@ -82,6 +122,14 @@ curl -G https://api.probe.dev/v1/probe/file \
 ## File Categories
 
 <CardGroup cols={2}>
+  <Card title="Streaming Formats" icon="broadcast-tower">
+    **HLS** - HTTP Live Streaming playlists  
+    **DASH** - Dynamic Adaptive Streaming manifests  
+    **RTMP** - Real-Time Messaging Protocol  
+    **RTSP** - Real Time Streaming Protocol  
+    **SRT** - Secure Reliable Transport  
+  </Card>
+  
   <Card title="Modern Codecs" icon="sparkles">
     **AV1** - Next-generation video compression  
     **HEVC (H.265)** - High Efficiency Video Coding  
@@ -115,10 +163,11 @@ curl -G https://api.probe.dev/v1/probe/file \
 
 Reference these files in your API calls when following our guides:
 
-- **[Quickstart](/quickstart)** - Uses `sample-source.mp4`
-- **[Report Types](/guides/report-types)** - Examples with multiple files
+- **[Quickstart](/quickstart)** - Uses `sample-source.mp4` and streaming examples
+- **[Report Types](/guides/report-types)** - Examples with multiple files and formats
 - **[Migration Guide](/guides/migration-guide)** - PHP examples with `x264.avi`
+- **[Media Sources](/guides/media-sources)** - Comprehensive streaming format examples
 
 <Note>
-These sample files are perfect for testing edge cases, validating your integration, and exploring different codec behaviors without using your own media assets.
+These sample files and streaming sources are perfect for testing edge cases, validating your integration, and exploring different codec behaviors without using your own media assets.
 </Note> 

@@ -1,0 +1,407 @@
+---
+title: 'Streaming Format Analysis'
+description: 'Comprehensive guide to analyzing HLS, DASH, and live streaming protocols with Probe.dev'
+---
+
+## Overview
+
+Probe.dev provides comprehensive analysis capabilities for streaming media formats and protocols. Whether you're working with adaptive streaming formats like HLS and DASH, or live streaming protocols such as RTMP, RTSP, and SRT, our API can extract detailed technical information to help optimize your streaming workflows.
+
+<Info>
+Streaming analysis supports video, audio, and caption tracks across all formats and protocols, providing the same level of detail as traditional file analysis.
+</Info>
+
+## Adaptive Streaming Formats
+
+### HLS (HTTP Live Streaming)
+
+HLS is Apple's adaptive streaming protocol that delivers content over HTTP using playlists and media segments.
+
+#### Master Playlist Analysis
+
+Analyze multi-bitrate HLS streams to understand the available quality levels:
+
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://probelibrary.s3.amazonaws.com/hls/sample/big_buck_bunny.m3u8" \
+  --data-urlencode "inject_json=true"
+```
+
+**Key Information Extracted:**
+- Variant streams and their bitrates
+- Resolution and frame rate for each quality level
+- Audio and subtitle track information
+- Codec details (H.264, AAC, etc.)
+- Segment duration and structure
+
+#### Media Playlist Analysis
+
+For individual quality levels, you can analyze specific media playlists:
+
+```json
+{
+  "url": "https://example.com/hls/720p.m3u8",
+  "mediainfo": {
+    "enabled": true,
+    "output": "JSON"
+  }
+}
+```
+
+<Tip>
+Use MediaInfo for HLS analysis as it provides excellent support for playlist parsing and segment information.
+</Tip>
+
+### DASH (Dynamic Adaptive Streaming over HTTP)
+
+DASH is an international standard for adaptive streaming that uses XML manifests to describe media presentations.
+
+#### MPD (Media Presentation Description) Analysis
+
+Analyze DASH manifests to understand adaptation sets and representations:
+
+```bash
+curl -X POST https://api.probe.dev/v1/probe/file \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://cdn.bitmovin.com/content/assets/art-of-motion-dash-hls-progressive/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd",
+    "inject_json": true,
+    "mediainfo": {
+      "enabled": true,
+      "output": "JSON"
+    },
+    "ffprobe": {
+      "enabled": true,
+      "show_streams": true,
+      "show_format": true
+    }
+  }'
+```
+
+**Key Information Extracted:**
+- Adaptation sets for video, audio, and text
+- Multiple representations within each adaptation set
+- Codec profiles and levels
+- Segment templates and timelines
+- Accessibility features
+
+#### Live vs VOD DASH Analysis
+
+DASH manifests can represent both live and video-on-demand content:
+
+<Tabs>
+<Tab title="VOD DASH">
+```json
+{
+  "manifest_type": "static",
+  "duration": "PT634S",
+  "profiles": "urn:mpeg:dash:profile:isoff-main:2011"
+}
+```
+</Tab>
+
+<Tab title="Live DASH">
+```json
+{
+  "manifest_type": "dynamic",
+  "availability_start_time": "2024-01-15T10:00:00Z",
+  "time_shift_buffer_depth": "PT300S"
+}
+```
+</Tab>
+</Tabs>
+
+## Live Streaming Protocols
+
+### RTMP (Real-Time Messaging Protocol)
+
+RTMP is widely used for live streaming and video-on-demand delivery.
+
+#### Live Stream Analysis
+
+Analyze active RTMP streams:
+
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=rtmp://live.example.com/stream/stream_key" \
+  --data-urlencode "only=ffprobe" \
+  --data-urlencode "timeout=30000"
+```
+
+#### VOD Content Analysis
+
+Examine RTMP video-on-demand content:
+
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=rtmp://matthewc.co.uk/vod/scooter" \
+  --data-urlencode "inject_json=true"
+```
+
+**Common RTMP URL Patterns:**
+```
+rtmp://server.example.com/live/stream_key
+rtmp://server.example.com/vod/video_name
+rtmp://server.example.com/app/playpath
+rtmps://secure.example.com/live/stream_key (SSL)
+```
+
+### RTSP (Real Time Streaming Protocol)
+
+RTSP is commonly used for IP cameras and surveillance systems.
+
+#### Camera Stream Analysis
+
+Analyze IP camera feeds:
+
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=rtsp://camera.example.com:554/stream1" \
+  --data-urlencode "ffprobe[show_streams]=true" \
+  --data-urlencode "ffprobe[timeout]=15000"
+```
+
+**Common RTSP URL Patterns:**
+```
+rtsp://camera.example.com/stream
+rtsp://camera.example.com:554/live/stream
+rtsp://username:password@camera.example.com/stream
+rtsps://secure.camera.example.com/stream (SSL)
+```
+
+### SRT (Secure Reliable Transport)
+
+SRT provides low-latency, secure streaming with error recovery.
+
+#### SRT Stream Analysis
+
+Analyze SRT streams for technical specifications:
+
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=srt://server.example.com:1234" \
+  --data-urlencode "only=ffprobe"
+```
+
+**SRT URL Formats:**
+```
+srt://server.example.com:port
+srt://server.example.com:port?streamid=stream_name
+srt://server.example.com:port?passphrase=secret&latency=200
+```
+
+## Analysis Tools Comparison
+
+Different tools provide varying levels of detail for streaming formats:
+
+| **Tool** | **HLS** | **DASH** | **RTMP** | **RTSP** | **SRT** | **Best For** |
+|----------|---------|----------|----------|----------|---------|--------------|
+| **FFprobe** | ✅ Basic | ✅ Basic | ✅ Full | ✅ Full | ✅ Full | Live streams, technical details |
+| **MediaInfo** | ✅ Full | ✅ Full | ❌ Limited | ❌ Limited | ❌ Limited | Playlist/manifest analysis |
+| **Probe Report** | ✅ Enhanced | ✅ Enhanced | ✅ Enhanced | ✅ Enhanced | ✅ Enhanced | Comprehensive analysis |
+
+<Note>
+For streaming formats, we recommend using MediaInfo for playlist/manifest analysis and FFprobe for live protocol analysis.
+</Note>
+
+## Performance Considerations
+
+### Timeout Settings
+
+Streaming analysis may require longer timeouts:
+
+```json
+{
+  "url": "rtmp://live.example.com/stream",
+  "timeout": 30000,
+  "queue_timeout": 60000,
+  "ffprobe": {
+    "timeout": 25000
+  }
+}
+```
+
+### Recommended Timeouts by Protocol
+
+| **Protocol** | **Recommended Timeout** | **Reason** |
+|--------------|------------------------|------------|
+| HLS/DASH | 30-60 seconds | Playlist parsing + segment analysis |
+| RTMP Live | 15-30 seconds | Connection establishment + buffering |
+| RTSP | 10-20 seconds | Network latency + authentication |
+| SRT | 15-25 seconds | Handshake + initial packet analysis |
+
+## Use Cases and Examples
+
+### Streaming Quality Monitoring
+
+Monitor HLS stream quality across different bitrates:
+
+<Steps>
+<Step title="Analyze Master Playlist">
+Extract all available quality levels and their specifications.
+
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://stream.example.com/master.m3u8" \
+  --data-urlencode "only=mediainfo"
+```
+</Step>
+
+<Step title="Check Individual Quality Levels">
+Analyze specific bitrate streams for consistency.
+
+```bash
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://stream.example.com/720p.m3u8" \
+  --data-urlencode "inject_json=true"
+```
+</Step>
+
+<Step title="Validate Segment Integrity">
+Ensure segments are properly encoded and accessible.
+
+<Check>
+Verify consistent codecs, resolution, and timing across all quality levels.
+</Check>
+</Step>
+</Steps>
+
+### Live Stream Health Check
+
+Monitor live streaming endpoints for availability and quality:
+
+```bash
+# Monitor RTMP publish endpoint
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=rtmp://live.example.com/stream/health_check" \
+  --data-urlencode "timeout=15000"
+```
+
+### Multi-Protocol Analysis
+
+Compare the same content across different delivery methods:
+
+<CodeGroup>
+```bash HLS Analysis
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://stream.example.com/content.m3u8"
+```
+
+```bash DASH Analysis
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://stream.example.com/content.mpd"
+```
+
+```bash RTMP Analysis
+curl -G https://api.probe.dev/v1/probe/file \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=rtmp://stream.example.com/live/content"
+```
+</CodeGroup>
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+<Accordion title="Connection Timeouts">
+**Symptoms:** Request times out without returning data
+
+**Solutions:**
+- Increase timeout values (30-60 seconds)
+- Verify stream is active and accessible
+- Check network connectivity to streaming server
+- Test with a shorter analysis duration
+</Accordion>
+
+<Accordion title="Authentication Failures">
+**Symptoms:** 403 Forbidden or authentication errors
+
+**Solutions:**
+- Include credentials in RTSP URLs: `rtsp://user:pass@camera.example.com/stream`
+- Verify API token has sufficient permissions
+- Check if the streaming server requires specific user agents
+- Ensure SSL certificates are valid for HTTPS/RTMPS/RTSPS
+</Accordion>
+
+<Accordion title="Incomplete Analysis">
+**Symptoms:** Partial data returned or missing streams
+
+**Solutions:**
+- Use `inject_json=true` for enhanced data extraction
+- Increase buffer time for live streams
+- Try different analysis tools (FFprobe vs MediaInfo)
+- Check if stream requires specific connection parameters
+</Accordion>
+</AccordionGroup>
+
+### Error Codes
+
+| **Error** | **Description** | **Solution** |
+|-----------|-----------------|--------------|
+| `STREAM_UNAVAILABLE` | Stream endpoint not responding | Verify URL and stream status |
+| `PROTOCOL_ERROR` | Invalid protocol or URL format | Check URL syntax and protocol support |
+| `TIMEOUT_EXCEEDED` | Analysis took too long | Increase timeout or reduce analysis scope |
+| `AUTHENTICATION_FAILED` | Access denied | Verify credentials and permissions |
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Performance" icon="gauge">
+    - Set appropriate timeouts for each protocol
+    - Use specific analysis tools for each format
+    - Monitor API usage for streaming endpoints
+    - Cache results for frequently analyzed streams
+  </Card>
+  
+  <Card title="Reliability" icon="shield-check">
+    - Implement retry logic for live streams
+    - Validate stream availability before analysis
+    - Handle intermittent connection issues
+    - Use health check endpoints when available
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Media Sources Guide"
+    icon="link"
+    href="/guides/media-sources"
+  >
+    Learn about all supported media source types
+  </Card>
+  <Card
+    title="Report Types"
+    icon="chart-bar"
+    href="/guides/report-types"
+  >
+    Choose the right analysis tools for your streams
+  </Card>
+  <Card
+    title="Sample Library"
+    icon="video"
+    href="/reference/sample-media-library"
+  >
+    Try streaming examples with our test sources
+  </Card>
+  <Card
+    title="MCP Integration"
+    icon="plug"
+    href="/guides/mcp-integration"
+  >
+    Use streaming analysis with AI assistants
+  </Card>
+</CardGroup> 
