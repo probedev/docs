@@ -203,11 +203,11 @@ Different tools provide varying levels of detail for streaming formats:
 | **Tool** | **HLS** | **DASH** | **RTMP** | **RTSP** | **SRT** | **Best For** |
 |----------|---------|----------|----------|----------|---------|--------------|
 | **FFprobe** | ✅ Basic | ✅ Basic | ✅ Full | ✅ Full | ✅ Full | Live streams, technical details |
-| **MediaInfo** | ✅ Full | ✅ Full | ❌ Limited | ❌ Limited | ❌ Limited | Playlist/manifest analysis |
+| **MediaInfo** | ✅ Full | ✅ Full | ✅ Full | ✅ Full | ❌ Limited | Playlist/manifest analysis |
 | **Probe Report** | ✅ Enhanced | ✅ Enhanced | ✅ Enhanced | ✅ Enhanced | ✅ Enhanced | Comprehensive analysis |
 
 <Note>
-For streaming formats, we recommend using MediaInfo for playlist/manifest analysis and FFprobe for live protocol analysis.
+For streaming formats, we recommend using MediaInfo for playlist/manifest analysis and RTMP/RTSP streams, and FFprobe for SRT and detailed live protocol analysis.
 </Note>
 
 ## Performance Considerations
@@ -339,21 +339,24 @@ curl -G https://api.probe.dev/v1/probe/file \
 **Symptoms:** Partial data returned or missing streams
 
 **Solutions:**
-- Use `inject_json=true` for enhanced data extraction
 - Increase buffer time for live streams
 - Try different analysis tools (FFprobe vs MediaInfo)
 - Check if stream requires specific connection parameters
+- Verify stream is stable and not dropping frames
 </Accordion>
 </AccordionGroup>
 
-### Error Codes
+### Error Handling
 
-| **Error** | **Description** | **Solution** |
-|-----------|-----------------|--------------|
-| `STREAM_UNAVAILABLE` | Stream endpoint not responding | Verify URL and stream status |
-| `PROTOCOL_ERROR` | Invalid protocol or URL format | Check URL syntax and protocol support |
-| `TIMEOUT_EXCEEDED` | Analysis took too long | Increase timeout or reduce analysis scope |
-| `AUTHENTICATION_FAILED` | Access denied | Verify credentials and permissions |
+When streaming analysis encounters issues, Probe.dev returns the actual error messages from the underlying analysis tools (FFprobe, MediaInfo) along with their exit codes. Common error patterns include:
+
+- **Connection errors** - Network issues or unreachable streams
+- **Protocol errors** - Unsupported or malformed URLs  
+- **Timeout errors** - Analysis duration exceeded configured limits
+- **Authentication errors** - Access denied by streaming server
+- **Format errors** - Unrecognized or corrupted stream format
+
+Check the `error` field in the tool response for specific details from FFprobe or MediaInfo.
 
 ## Best Practices
 
