@@ -121,6 +121,61 @@ DASH manifests can represent both live and video-on-demand content:
 </Tab>
 </Tabs>
 
+## HLS Validation with MediaStreamValidator
+
+### Apple's HLS Compliance Checking
+
+MediaStreamValidator provides industry-standard HLS compliance validation using Apple's official tooling. This dedicated endpoint validates HLS streams against Apple's technical specifications, essential for App Store submissions and debugging playback issues.
+
+#### HLS Compliance Validation
+
+Validate HLS playlists for Apple compliance:
+
+```bash
+curl -G https://api.probe.dev/v1/probe/mediastreamvalidator \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://probelibrary.s3.amazonaws.com/hls/sample/big_buck_bunny.m3u8" \
+  --data-urlencode "parse_playlist_only=true"
+```
+
+#### Deep Stream Analysis
+
+For comprehensive validation including segment analysis:
+
+```bash
+curl -X POST https://api.probe.dev/v1/probe/mediastreamvalidator \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/master.m3u8",
+    "parse_playlist_only": false,
+    "enable_cli_output": true,
+    "timeout": 650000
+  }'
+```
+
+**Key Validation Features:**
+- Apple HLS specification compliance
+- Segment integrity verification
+- Bitrate ladder validation
+- Codec compatibility checking
+- Accessibility compliance (closed captions)
+
+**Common Use Cases:**
+- Pre-publish HLS validation
+- App Store submission requirements
+- Debugging playback issues across Apple devices
+- Quality assurance workflows
+- CI/CD pipeline integration
+
+<Warning>
+MediaStreamValidator analysis typically takes 12-15 seconds to complete due to comprehensive stream validation. Use selectively during staging or pre-publish workflows.
+</Warning>
+
+<Note>
+Use `parse_playlist_only=true` for faster playlist-only validation, or `false` for complete segment analysis including media content validation.
+</Note>
+
 ## Live Streaming Protocols
 
 ### RTMP (Real-Time Messaging Protocol)
@@ -213,9 +268,10 @@ Different tools provide varying levels of detail for streaming formats:
 | **FFprobe** | ✅ Basic | ✅ Basic | ✅ Full | ✅ Full | ✅ Full | Live streams, technical details |
 | **MediaInfo** | ✅ Full | ✅ Full | ✅ Full | ✅ Full | ❌ Limited | Playlist/manifest analysis |
 | **Probe Report** | ✅ Enhanced | ✅ Enhanced | ✅ Enhanced | ✅ Enhanced | ✅ Enhanced | Comprehensive analysis |
+| **MediaStreamValidator** | ✅ Compliance | ❌ N/A | ❌ N/A | ❌ N/A | ❌ N/A | Apple HLS specification validation |
 
 <Note>
-For streaming formats, we recommend using MediaInfo for playlist/manifest analysis and RTMP/RTSP streams, and FFprobe for SRT and detailed live protocol analysis.
+For streaming formats, we recommend using MediaInfo for playlist/manifest analysis and RTMP/RTSP streams, FFprobe for SRT and detailed live protocol analysis, and MediaStreamValidator for HLS compliance validation.
 </Note>
 
 ## Performance Considerations

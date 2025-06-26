@@ -47,6 +47,14 @@ curl -G https://api.probe.dev/v1/probe/file \
   --data-urlencode "url=rtmp://matthewc.co.uk/vod/scooter"
 ```
 
+#### HLS Validation with MediaStreamValidator
+```bash
+curl -G https://api.probe.dev/v1/probe/mediastreamvalidator \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://probelibrary.s3.amazonaws.com/hls/sample/big_buck_bunny.m3u8" \
+  --data-urlencode "parse_playlist_only=true"
+```
+
 <Note>
 Streaming protocol analysis may take longer than static file analysis due to connection establishment and content buffering requirements.
 </Note>
