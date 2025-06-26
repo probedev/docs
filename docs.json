@@ -31,24 +31,40 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Getting Started",
+        "tab": "Quickstart",
         "groups": [
           {
-            "group": "Essentials",
+            "group": "Get Started",
             "pages": [
               "index",
               "quickstart",
               "authentication",
-              "guides/mcp-integration"
+              "reference/sample-media-library"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "guides/report-types",
+              "guides/media-sources"
             ]
           },
           {
-            "group": "Integration Guides",
+            "group": "Streaming & Validation",
             "pages": [
-              "guides/report-types",
-              "guides/media-sources",
               "guides/streaming-analysis",
-              "guides/hls-validation",
+              "guides/hls-validation"
+            ]
+          },
+          {
+            "group": "Advanced Integration",
+            "pages": [
+              "guides/mcp-integration",
               "guides/migration-guide"
             ]
           }
@@ -59,21 +75,15 @@
         "openapi": "https://api.probedev.com/frontend/api/v1/openapi.json?include-base-path=true"
       },
       {
-        "tab": "Media Formats",
+        "tab": "Reference",
         "groups": [
           {
-            "group": "Codecs & Formats",
+            "group": "Format Support",
             "pages": [
               "reference/audio-codecs",
               "reference/video-codecs",
-              "reference/container-formats"
-            ]
-          },
-          {
-            "group": "Data References",
-            "pages": [
-              "reference/probe-report-parameters",
-              "reference/sample-media-library"
+              "reference/container-formats",
+              "reference/probe-report-parameters"
             ]
           }
         ]
