@@ -141,14 +141,5 @@
     "ga4": {
       "measurementId": "G-EYJ6M6K4PC"
     }
-  },
-  "head": [
-    {
-      "tag": "script",
-      "attributes": {
-        "src": "/apollo-tracker.js",
-        "async": true
-      }
-    }
-  ]
+  }
 }
