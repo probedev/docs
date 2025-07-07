@@ -140,6 +140,9 @@
   "integrations": {
     "ga4": {
       "measurementId": "G-EYJ6M6K4PC"
+    },
+    "gtm": {
+      "tagId": "GTM-KJX3XRSJ"
     }
   }
 }
