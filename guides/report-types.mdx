@@ -1,11 +1,20 @@
 ---
 title: 'Report Types'
-description: 'Understanding FFprobe, MediaInfo, and Probe Report analysis tools'
+description: 'Complete guide to Probe.dev analysis tools: media analysis, streaming validation, and content authenticity verification'
 ---
 
 ## Overview
 
-Probe.dev supports multiple analysis tools, each optimizing for different use cases. You can enable **one, several, or all** of: `mediainfo`, `ffprobe`, `probe_report`.
+Probe.dev supports multiple analysis tools across different categories:
+
+**Core Media Analysis:** Traditional metadata extraction and technical analysis
+- `mediainfo`, `ffprobe`, `probe_report` - Can be enabled together for comprehensive media analysis
+
+**Specialized Validation:** Purpose-built tools for specific compliance requirements  
+- `mediastreamvalidator` - HLS compliance validation for Apple App Store submissions
+- `c2pa` - Content authenticity and provenance verification
+
+**Example:** Core media analysis tools working together:
 
 ```json
 {
