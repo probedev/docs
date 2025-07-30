@@ -39,6 +39,17 @@ Probe.dev supports multiple analysis tools across different categories:
 | ------------- | -------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `only`        | string   | `mediainfo`, `ffprobe`, `probe_report`, `c2pa`       | Run exactly one tool and return its raw output with no wrappers                                                          |
 | `inject_json` | boolean  | `true`, `false`                                       | Inject the canonicalized metadata back into the original raw JSON payload so downstream tools can consume a single object |
+| `inject_output` | boolean  | `true`, `false`                                       | Return raw tool output as-is, without Probe.dev metadata wrapper (available for single-tool endpoints)                   |
+
+### Response Format Philosophy
+
+**Raw Tool Output:** Probe.dev's design philosophy prioritizes giving you the same experience as running tools locally. Single-tool endpoints (like `/v1/probe/c2pa` and `/v1/probe/mediastreamvalidator`) default to raw output for convenience. Multi-tool endpoints wrap responses to handle multiple reports.
+
+**When to use each:**
+- **`only`** - Single tool with raw output from `/v1/probe/file` 
+- **`inject_output=true`** - Raw output from dedicated single-tool endpoints (default where applicable)
+- **`inject_json=true`** - Enhanced JSON formatting for easier parsing
+- **Standard response** - Full metadata including usage statistics and multiple tool outputs
 
 ## <span className="tool-mediainfo px-2 py-1 rounded text-sm font-medium mr-2">MediaInfo</span>
 
@@ -126,14 +137,10 @@ The C2PA (Coalition for Content Provenance and Authenticity) report validates [C
 
 | **Parameter** | **Description** | **Allowed values** | **Default** |
 | ------------- | --------------- | ------------------ | ----------- |
-| `inject_output` | Return raw C2PA tool output as-is, without Probe.dev metadata wrapper (enabled by default for single-tool convenience) | `true`, `false` | `true` |
+| `inject_output` | Return raw C2PA tool output as-is, without metadata wrapper (default: `true` - see [Response Format Philosophy](#response-format-philosophy)) | `true`, `false` | `true` |
 | `inject_json` | Inject C2PA to response as object, not string | `true`, `false` | `false` |
 | `timeout` | Analysis timeout in milliseconds | integer | `65000` |
 | `queue_timeout` | Queue timeout in milliseconds | integer | `60000` |
-
-<Tip>
-**Why `inject_output=true` by default?** C2PA analysis returns a single, self-contained report making it ideal for raw output. This gives you the same experience as running the tool locally. For usage statistics or metadata, set `inject_output=false`.
-</Tip>
 
 ### Supported Formats
 
