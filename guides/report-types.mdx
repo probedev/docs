@@ -126,8 +126,8 @@ The C2PA (Coalition for Content Provenance and Authenticity) report validates [C
 
 | **Parameter** | **Description** | **Allowed values** | **Default** |
 | ------------- | --------------- | ------------------ | ----------- |
-| `inject_output` | Include structured C2PA data in response | `true`, `false` | `true` |
-| `inject_json` | Parse Content Credentials as JSON | `true`, `false` | `false` |
+| `inject_output` | Return only the C2PA response without additional metadata (enabled by default) | `true`, `false` | `true` |
+| `inject_json` | Inject C2PA to response as object, not string | `true`, `false` | `false` |
 | `timeout` | Analysis timeout in milliseconds | integer | `65000` |
 | `queue_timeout` | Queue timeout in milliseconds | integer | `60000` |
 
