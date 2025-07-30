@@ -126,10 +126,14 @@ The C2PA (Coalition for Content Provenance and Authenticity) report validates [C
 
 | **Parameter** | **Description** | **Allowed values** | **Default** |
 | ------------- | --------------- | ------------------ | ----------- |
-| `inject_output` | Return only the C2PA response without additional metadata (enabled by default) | `true`, `false` | `true` |
+| `inject_output` | Return raw C2PA tool output as-is, without Probe.dev metadata wrapper (enabled by default for single-tool convenience) | `true`, `false` | `true` |
 | `inject_json` | Inject C2PA to response as object, not string | `true`, `false` | `false` |
 | `timeout` | Analysis timeout in milliseconds | integer | `65000` |
 | `queue_timeout` | Queue timeout in milliseconds | integer | `60000` |
+
+<Tip>
+**Why `inject_output=true` by default?** C2PA analysis returns a single, self-contained report making it ideal for raw output. This gives you the same experience as running the tool locally. For usage statistics or metadata, set `inject_output=false`.
+</Tip>
 
 ### Supported Formats
 
