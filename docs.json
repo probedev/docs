@@ -72,7 +72,7 @@
       },
       {
         "tab": "API Reference",
-        "openapi": "https://api.probedev.com/frontend/api/v1/openapi.json?include-base-path=true"
+        "openapi": "https://api.probedev.com/frontend/api/v1/openapi.json?include-base-path=true&v=2025-07-30"
       },
               {
           "tab": "Media Formats",
