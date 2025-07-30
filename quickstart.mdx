@@ -94,6 +94,15 @@ curl -G https://api.probe.dev/v1/probe/mediastreamvalidator \
   --data-urlencode "parse_playlist_only=true"
 ```
 </Tab>
+
+<Tab title="C2PA Analysis">
+```bash
+curl -G https://api.probe.dev/v1/probe/c2pa \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://probelibrary.s3.amazonaws.com/c2pa/sample-with-credentials.jpg" \
+  --data-urlencode "inject_output=true"
+```
+</Tab>
 </Tabs>
 
 <Info>

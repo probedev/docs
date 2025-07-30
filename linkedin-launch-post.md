@@ -1,0 +1,7 @@
+# Probe.dev Launch Post - Personal & Technical
+
+**Personal Launch Note:**
+
+After 15 years running Encoding.com, I scaled massive media processing pipelines and witnessed firsthand the internal workflows of some of the world's most sophisticated video engineering teams. While everyone rushed to move media processing to the cloud, media analysis was left behind—forcing teams to use mature open tools like FFprobe and MediaInfo because there was no other choice. Everyone complained about the same things: inconsistency, edge cases, and version mismatches. Media analysis should be a standalone microservice. So after some time recreating following Encoding.com's sale and destruction by Telestream, I'm proud to launch Probe.dev—the service we would have used all along. Probe.dev gives you the same analysis tools you're already using (FFprobe, MediaInfo, MediaStreamValidator) but as a consistent, scalable API that doesn't break when you need it most. Then we added Probe Report, which normalizes outputs from both tools using ML trained on over a billion assets. Every video engineer deserves infrastructure that just works, so you can focus on building great video experiences instead of babysitting analysis servers. Ready to stop managing media analysis infrastructure? [Try it free](https://www.probe.dev/dashboard) and see what 500ms analysis times feel like.
+
+#VideoEngineering #FFmpeg #InfrastructureAsCode #MediaAnalysis 

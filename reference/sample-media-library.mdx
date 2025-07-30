@@ -59,6 +59,38 @@ curl -G https://api.probe.dev/v1/probe/mediastreamvalidator \
 Streaming protocol analysis may take longer than static file analysis due to connection establishment and content buffering requirements.
 </Note>
 
+## Content Authenticity & Provenance (C2PA)
+
+Test content authenticity verification with these [C2PA](https://c2pa.org/)-enabled samples:
+
+| Source | Format | Description |
+| ------ | ------ | ----------- |
+| [c2pa-sample.jpg](https://probelibrary.s3.amazonaws.com/c2pa/sample-with-credentials.jpg) | JPEG | Image with embedded Content Credentials |
+| [ai-generated.png](https://probelibrary.s3.amazonaws.com/c2pa/ai-generated-sample.png) | PNG | AI-generated image with provenance data |
+| [edited-photo.heic](https://probelibrary.s3.amazonaws.com/c2pa/edited-sample.heic) | HEIC | Photo with edit history in C2PA metadata |
+
+### C2PA Analysis Examples
+
+#### Content Authenticity Check
+```bash
+curl -G https://api.probe.dev/v1/probe/c2pa \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://probelibrary.s3.amazonaws.com/c2pa/sample-with-credentials.jpg" \
+  --data-urlencode "inject_output=true"
+```
+
+#### AI Content Detection
+```bash
+curl -G https://api.probe.dev/v1/probe/c2pa \
+  --data-urlencode "token=${PROBE_API_TOKEN}" \
+  --data-urlencode "url=https://probelibrary.s3.amazonaws.com/c2pa/ai-generated-sample.png" \
+  --data-urlencode "inject_json=true"
+```
+
+<Tip>
+C2PA analysis works with images, videos, audio, and documents that contain embedded Content Credentials. Test with [C2PA public test files](https://github.com/c2pa-org/public-testfiles) for comprehensive validation scenarios.
+</Tip>
+
 ## Static Media Files
 
 | File                                                                                                                                                | Media Type                         |
@@ -165,14 +197,21 @@ curl -G https://api.probe.dev/v1/probe/file \
     **QuickTime** - Apple legacy formats  
     **Indeo** - Intel video codecs  
   </Card>
+  
+  <Card title="Content Authenticity" icon="shield-check">
+    **C2PA** - Content provenance verification  
+    **Content Credentials** - Authenticity metadata  
+    **AI Detection** - Generated content identification  
+    **Edit History** - Modification tracking  
+  </Card>
 </CardGroup>
 
 ## Usage in Documentation
 
 Reference these files in your API calls when following our guides:
 
-- **[Quickstart](/quickstart)** - Uses `sample-source.mp4` and streaming examples
-- **[Report Types](/guides/report-types)** - Examples with multiple files and formats
+- **[Quickstart](/quickstart)** - Uses `sample-source.mp4`, streaming, and C2PA examples
+- **[Report Types](/guides/report-types)** - Examples with multiple files, formats, and authenticity verification
 - **[Migration Guide](/guides/migration-guide)** - PHP examples with `x264.avi`
 - **[Media Sources](/guides/media-sources)** - Comprehensive streaming format examples
 

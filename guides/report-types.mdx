@@ -26,10 +26,10 @@ Probe.dev supports multiple analysis tools, each optimizing for different use ca
 
 ## Quick Selection
 
-| **Parameter** | **Type** | **Allowed values**                     | **Purpose**                                                                                                               |
-| ------------- | -------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `only`        | string   | `mediainfo`, `ffprobe`, `probe_report` | Run exactly one tool and return its raw output with no wrappers                                                          |
-| `inject_json` | boolean  | `true`, `false`                        | Inject the canonicalized metadata back into the original raw JSON payload so downstream tools can consume a single object |
+| **Parameter** | **Type** | **Allowed values**                                    | **Purpose**                                                                                                               |
+| ------------- | -------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `only`        | string   | `mediainfo`, `ffprobe`, `probe_report`, `c2pa`       | Run exactly one tool and return its raw output with no wrappers                                                          |
+| `inject_json` | boolean  | `true`, `false`                                       | Inject the canonicalized metadata back into the original raw JSON payload so downstream tools can consume a single object |
 
 ## <span className="tool-mediainfo px-2 py-1 rounded text-sm font-medium mr-2">MediaInfo</span>
 
@@ -101,6 +101,39 @@ The `probe_report` parses, reconciles and canonicalizes the raw outputs from FFp
 | **Parameter** | **Description**                                               | **Allowed values** | **Default** |
 | ------------- | ------------------------------------------------------------- | ------------------ | ----------- |
 | `enabled`     | Toggle Probe Report generation                                | `true`, `false`    | `false`     |
+
+## <span className="tool-c2pa px-2 py-1 rounded text-sm font-medium mr-2">C2PA Report</span>
+
+The C2PA (Coalition for Content Provenance and Authenticity) report validates [Content Credentials](https://contentcredentials.org) and provides comprehensive content provenance analysis. Based on the [C2PA 2.2 specification](https://spec.c2pa.org/specifications/specifications/2.2/index.html), it detects AI-generated content, verifies authenticity, and tracks content history.
+
+```json
+{
+    "url": "https://probelibrary.s3.amazonaws.com/c2pa/sample-with-credentials.jpg",
+    "only": "c2pa"
+}
+```
+
+### Parameters
+
+| **Parameter** | **Description** | **Allowed values** | **Default** |
+| ------------- | --------------- | ------------------ | ----------- |
+| `inject_output` | Include structured C2PA data in response | `true`, `false` | `true` |
+| `inject_json` | Parse Content Credentials as JSON | `true`, `false` | `false` |
+| `timeout` | Analysis timeout in milliseconds | integer | `65000` |
+| `queue_timeout` | Queue timeout in milliseconds | integer | `60000` |
+
+### Supported Formats
+
+C2PA analysis supports a wide range of media formats with embedded Content Credentials:
+
+**Images**: JPEG, PNG, AVIF, HEIC, HEIF, DNG, TIFF, WebP  
+**Video**: MP4, MOV, AVI  
+**Audio**: MP3, M4A, WAV  
+**Documents**: PDF, SVG
+
+<Tip>
+C2PA works best with content that includes embedded Content Credentials. For testing, use [C2PA public test files](https://github.com/c2pa-org/public-testfiles) which include various authenticity scenarios.
+</Tip>
 | `diff`        | Include structural diff between MediaInfo and FFprobe outputs | `true`, `false`    | `false`     |
 
 ## <span className="tool-mediastreamvalidator px-2 py-1 rounded text-sm font-medium mr-2">MediaStreamValidator</span>
@@ -137,7 +170,7 @@ The `probe_report` parses, reconciles and canonicalizes the raw outputs from FFp
 
 ## Choosing the Right Tool
 
-<CardGroup cols={3}>
+<CardGroup cols={2}>
   <Card title="MediaInfo" icon="info">
     **Best for:** Content validation, format verification, quick metadata overview
     
@@ -157,5 +190,12 @@ The `probe_report` parses, reconciles and canonicalizes the raw outputs from FFp
     
     **Speed:** Medium
     **Detail Level:** Highest
+  </Card>
+  
+  <Card title="C2PA Report" icon="shield-check">
+    **Best for:** Content authenticity, provenance verification, AI detection
+    
+    **Speed:** Fast
+    **Detail Level:** High
   </Card>
 </CardGroup> 
