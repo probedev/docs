@@ -5,7 +5,7 @@ description: 'Complete API documentation for Probe.dev media analysis'
 
 ## Welcome to Probe.dev API
 
-The Probe.dev API provides comprehensive media analysis through multiple industry-standard tools including FFprobe, MediaInfo, and our proprietary ML-enhanced Probe Report.
+The Probe.dev API provides comprehensive media analysis through multiple industry-standard tools including FFprobe, MediaInfo, and our proprietary ML-enhanced Probe Report, plus specialized validation tools for HLS compliance (MediaStreamValidator) and content authenticity (C2PA).
 
 <CardGroup cols={2}>
   <Card
@@ -54,7 +54,7 @@ https://api.probe.dev
 ## Main Endpoints
 
 ### Media Analysis
-- **`/v1/probe/file`** - Analyze media files, streaming formats (HLS, DASH), and streaming protocols (RTMP, RTSP, SRT) with FFprobe, MediaInfo, and Probe Report
+- **`/v1/probe/file`** - Analyze media files, streaming formats (HLS, DASH), and streaming protocols (RTMP, RTSP, SRT) with FFprobe, MediaInfo, Probe Report, and C2PA
 - **`/v1/probe/mediastreamvalidator`** - Validate HLS streams with Apple's MediaStreamValidator
 
 ### Management
